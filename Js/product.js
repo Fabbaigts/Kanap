@@ -55,18 +55,18 @@ async function  affichageProduit()
       AjoutPanier.addEventListener('click',function()
       {
           const colorValue = document.getElementById("colors").value;
-          let quantite = parseInt(document.getElementById("quantity").value);
+          let quantiteAAjouter = parseInt(document.getElementById("quantity").value);
       
          
           let valArticle = 
          {
             id: idUrl, // idUrl est une constant déclarée au début lors de la récupértation de l'Id
-            quantité: quantite, // Const quantity
+            quantite: quantiteAAjouter, // Const quantity
             couleur: colorValue
          } 
           panier = [];
          // Si quantité <1 OU couleur != i alors renvoie un message "Merci de bien vouloir choisir une option de couleur Et un quantité"
-          if ((quantite < 1) || (colorValue === "")) {console.log(quantite); console.log(colorValue);
+          if ((quantiteAAjouter < 1) || (colorValue === "")) {console.log(quantiteAAjouter); console.log(colorValue);
            alert("Merci de bien vouloir renseigner une option couleur Et une Quantité! ")}
 
           else 
@@ -74,7 +74,7 @@ async function  affichageProduit()
             let testIdLs = localStorage.getItem (idUrl)
             if (testIdLs != null){
               testIdLs=JSON.parse(testIdLs);
-              testIdLs.quantité += quantite;
+              testIdLs.quantite += quantiteAAjouter;
               localStorage.setItem (idUrl,JSON.stringify(testIdLs))
             }
             else {
@@ -85,7 +85,7 @@ async function  affichageProduit()
             console.log("console.log de la variable article  push dans le tableau 'panier'",valArticle);
             remplissagelocalStorage(valArticle)*/
 
-            console.log(valArticle.quantité);
+            console.log(valArticle.quantite);
             console.log(valArticle.couleur);  
           }
       })
