@@ -52,18 +52,12 @@ async function  affichageProduit()
       let quantite = document.getElementById("quantity").value;
       console.log(quantite);
 
-
-
-
-
       AjoutPanier.addEventListener('click',function()
       {
           const colorValue = document.getElementById("colors").value;
-          let quantite = document.getElementById("quantity").value;
+          let quantite = parseInt(document.getElementById("quantity").value);
       
          
-         
-
           let valArticle = 
          {
             id: idUrl, // idUrl est une constant déclarée au début lors de la récupértation de l'Id
@@ -72,30 +66,27 @@ async function  affichageProduit()
          } 
           panier = [];
          // Si quantité <1 OU couleur != i alors renvoie un message "Merci de bien vouloir choisir une option de couleur Et un quantité"
-          if ((quantite < 1) || (colorValue === "")){console.log(quantite); console.log(colorValue);
+          if ((quantite < 1) || (colorValue === "")) {console.log(quantite); console.log(colorValue);
            alert("Merci de bien vouloir renseigner une option couleur Et une Quantité! ")}
 
           else 
           {
-            panier.push(valArticle);//rajoute un élément article au tableau panier[]
+            let testIdLs = localStorage.getItem (idUrl)
+            if (testIdLs != null){
+              testIdLs=JSON.parse(testIdLs);
+              testIdLs.quantité += quantite;
+              localStorage.setItem (idUrl,JSON.stringify(testIdLs))
+            }
+            else {
+              localStorage.setItem (idUrl,JSON.stringify(valArticle))
+            }
+
+            /*panier.push(valArticle);//rajoute un élément article au tableau panier[]
             console.log("console.log de la variable article  push dans le tableau 'panier'",valArticle);
-            remplissagelocalStorage(valArticle)
-
-
+            remplissagelocalStorage(valArticle)*/
 
             console.log(valArticle.quantité);
-            console.log(valArticle.couleur);
-            console.log(colorValue);
-
-             
-            function remplissagelocalStorage(valArticle) 
-            { 
-             
-             /*Si le localstorage à déjà une clé produit "key" similaire..... if(----- = valArticle.id && couleur) {valArticle.quantité++} */ 
-              // Sinon :         
-            localStorage.setItem((idUrl),JSON.stringify(valArticle)); 
-              
-            }
+            console.log(valArticle.couleur);  
           }
       })
   }
