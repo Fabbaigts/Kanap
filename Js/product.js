@@ -47,16 +47,15 @@ async function  affichageProduit()
          console.log(i)
          
       }
-      /* ----------------------------------------------------------------------------*/
+      /* -------------------------Fonction d'ajout de produit au panier ---------------------------------------------------*/
       const AjoutPanier = document.getElementById("addToCart");
-      let quantite = document.getElementById("quantity").value;
-      console.log(quantite);
+      
 
       AjoutPanier.addEventListener('click',function()
       {
           const colorValue = document.getElementById("colors").value;
           let quantiteAAjouter = parseInt(document.getElementById("quantity").value);
-      
+          
          
           let valArticle = 
          {
