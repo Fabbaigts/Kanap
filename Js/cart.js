@@ -63,10 +63,10 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
   (function recuperationJson(produitsDuCatalogue) //recuperationJson => Tableau composé de tous les produits (en Json...)
     {
       console.log(produitsDuCatalogue); //Affichage dans la console du contenu de JSON
-
+      {
         let newArticle = document.querySelector("#cart__items");//ciblage de l'element html avec l'id cart__items
 
-        for (let instance of produitsDuCatalogue)//Boucle 1 d'inventaire des produits du catalogue général.
+          for (let instance of produitsDuCatalogue)//Boucle 1 d'inventaire des produits du catalogue général.
           { 
             for (let i of ProduitsDansLS)//Boucle 2 d'inventaire des produits dans le LS
             {
