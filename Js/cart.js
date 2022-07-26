@@ -36,7 +36,7 @@
     (https://prograide.com/pregunta/21964/obtenir-les-cles-html5-localstorage)*/
 
 let ProduitsDansLS = Object.entries(localStorage) 
-console.log(ProduitsDansLS);
+console.log(ProduitsDansLS);//ProduitsDansLS => tableau composé des elements du panier
 
 // 1.2 - Création d'une fonction d'affichage des produits <article> grâce à clé/produits du LS
 
@@ -60,24 +60,21 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
     nous le retournons et récupérons sa vraie valeur
     dans la fonction then() suivante, ayant comme paramètre 'produitsDuCatalogue'*/
 .then
-  (function recuperationJson(produitsDuCatalogue) 
+  (function recuperationJson(produitsDuCatalogue) //recuperationJson => Tableau composé de tous les produits (en Json...)
     {
       console.log(produitsDuCatalogue); //Affichage dans la console du contenu de JSON
 
-      function  affichageProduitsDuPanier(produitsDuCatalogue) {} 
-      { 
-        //ProduitsDansLS => tableau composé des elements du panier
-        //recuperationJson => Tableau composé de tous les produits (en Json...)
+        let newArticle = document.querySelector("#cart__items");//ciblage de l'element html avec l'id cart__items
 
-        let newArticle = document.querySelector("#cart__items");
-
-        for (let instance of produitsDuCatalogue)
+        for (let instance of produitsDuCatalogue)//Boucle 1 d'inventaire des produits du catalogue général.
           { 
-            for (let i of ProduitsDansLS)
+            for (let i of ProduitsDansLS)//Boucle 2 d'inventaire des produits dans le LS
             {
-              const produitParse = JSON.parse (i[1]);
+              const produitParse = JSON.parse (i[1]);// parsage des éléments du LS pour exploitation des données.
+              /*git Comparaison entre les produits du LS et ceux du Catalogue général pour trouver les similitudes.
+              Si similitude il y a alors, injecte le html suivant avec les données relatives au cat. général et celui du panier*/
               if (instance._id === produitParse.id)
-                { newArticle.innerHTML += `<section id="cart__items">
+                { newArticle.innerHTML += `<section id="cart__items"> 
                   <article class="cart__item" data-id="${produitParse.id}" data-color="${produitParse.couleur}">
                       <div class="cart__item__img">
                         <img src="${instance.imageUrl}" alt="${instance.altTxt}">
