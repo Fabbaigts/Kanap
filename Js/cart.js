@@ -63,10 +63,59 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
   (function recuperationJson(produitsDuCatalogue) 
     {
       console.log(produitsDuCatalogue); //Affichage dans la console du contenu de JSON
-      affichageProduitsDuPanier(produitsDuCatalogue); // Lance la fonction "affichageProd" permettant l'affichage des produits du LS
+
+      function  affichageProduitsDuPanier(produitsDuCatalogue) {} 
+      { 
+        //ProduitsDansLS => tableau composé des elements du panier
+        //recuperationJson => Tableau composé de tous les produits (en Json...)
+
+        let newArticle = document.querySelector("#cart__items");
+
+        for (let instance of produitsDuCatalogue)
+          { 
+            for (let i of ProduitsDansLS)
+            {
+              const produitParse = JSON.parse (i[1]);
+              if (instance._id === produitParse.id)
+                { newArticle.innerHTML += `<section id="cart__items">
+                  <article class="cart__item" data-id="${produitParse.id}" data-color="${produitParse.couleur}">
+                      <div class="cart__item__img">
+                        <img src="${instance.imageUrl}" alt="${instance.altTxt}">
+                      </div>
+                      <div class="cart__item__content">
+                        <div class="cart__item__content__description">
+                          <h2>${instance.name}</h2>
+                          <p>${produitParse.couleur}</p>
+                          <p>${instance.price} €</p>
+                        </div>
+                        <div class="cart__item__content__settings">
+                          <div class="cart__item__content__settings__quantity">
+                            <p>Qté : </p>
+                            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${produitParse.quantite}">
+                          </div>
+                          <div class="cart__item__content__settings__delete">
+                            <p class="deleteItem">Supprimer</p>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  </section>`;
+                }
+            }
+       
+          }
+      }
     }
+    
   )
-    //Sinon affiche le message d'erreur dans la console et son type
+    
+  
+  
+  
+  
+  
+  
+  //Sinon affiche le message d'erreur dans la console et son type
 .catch
   (function (err) 
     {
@@ -80,79 +129,3 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
 // 1.2.2.1   - affichage de l'image produit <img>
 
 
-function  affichageProduitsDuPanier(produitsDuCatalogue) {} { 
-//ProduitsDansLS => tableau composé des elements du panier
-//recuperationJson => Tableau composé de tous les produits (en Json...)
-
-let newArticle = document.querySelector("#cart__items");
-for (let i of ProduitsDansLS)
-  {
-    console.log("Nouvel article détecté dans le fichier JSON:  " + i);
-    console.log("Nouvel article détecté dans le fichier JSON:  " + i[0]);
-
-      const produitarse = JSON.parse (i[1])///yeahhhhhhh!! il fallait parser pour pouvoir acceder aux données du ls!
-      console.log (produitarse)
-      console.log("Nouvel article détecté dans le fichier JSON:  " + produitarse.couleur); //lA PREUVE!
-
-
-    newArticle.innerHTML += `<section id="cart__items">
-            <article class="cart__item" data-id="{product-ID}" data-color="{product-color}">
-                <div class="cart__item__img">
-                  <img src="../images/product01.jpg" alt="Photographie d'un canapé">
-                </div>
-                <div class="cart__item__content">
-                  <div class="cart__item__content__description">
-                    <h2>Nom du produit</h2>
-                    <p>Vert</p>
-                    <p>42,00 €</p>
-                  </div>
-                  <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                      <p>Qté : </p>
-                      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="42">
-                    </div>
-                    <div class="cart__item__content__settings__delete">
-                      <p class="deleteItem">Supprimer</p>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </section>`;
-  }
-
-
-}
-
-/*  newArticle.innerHTML += 
-      `<a href="./product.html?_id=${i._id}"> 
-        <article>
-          <img src="${i.imageUrl}" alt="${i.altTxt}">
-          <h3 class="productName">${i.name}</h3>
-          <p class="productDescription">${i.description}</p>
-          <p class="productPrice">à partir de ${i.price}€</p>
-        </article>
-      </a>`;*/
-/*<section id="cart__items">
-             <!--  <article class="cart__item" data-id="{product-ID}" data-color="{product-color}">
-                <div class="cart__item__img">
-                  <img src="../images/product01.jpg" alt="Photographie d'un canapé">
-                </div>
-                <div class="cart__item__content">
-                  <div class="cart__item__content__description">
-                    <h2>Nom du produit</h2>
-                    <p>Vert</p>
-                    <p>42,00 €</p>
-                  </div>
-                  <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                      <p>Qté : </p>
-                      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="42">
-                    </div>
-                    <div class="cart__item__content__settings__delete">
-                      <p class="deleteItem">Supprimer</p>
-                    </div>
-                  </div>
-                </div>
-              </article> -->
-            </section>
-*/

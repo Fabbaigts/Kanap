@@ -16,7 +16,7 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
   (function (catalogue) 
     {
       console.log(catalogue); //Affichage dans la console du contenu de JSON
-      affichageProd(catalogue); // Lance la fonction "affichageProd" permettant l'affichage des produits du fichier JSON
+      affichageProd(catalogue)// Lance la fonction "affichageProd" permettant l'affichage des produits du fichier JSON
     }
   )
     //Sinon affiche le message d'erreur dans la console et son type
