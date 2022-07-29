@@ -1,4 +1,5 @@
-/* ---------------------etapes des fonctions attendues sur la page :-------------------------------
+
+ /* ---------------------etapes des fonctions attendues sur la page :-------------------------------
 
 
     1 - ******* Affichage sout forme de tableau des éléménents du panier (ou LS). *******
@@ -24,8 +25,8 @@
     /* récupération du local Storage et injection dans une variable
     (https://prograide.com/pregunta/21964/obtenir-les-cles-html5-localstorage)*/
 
-let tableauPanier = Object.entries(localStorage) 
-console.log(tableauPanier);//tableauPanierv => tableau composé des elements du panier
+let ProduitsDansLS = Object.entries(localStorage) 
+console.log(ProduitsDansLS);//ProduitsDansLS => tableau composé des elements du panier
 
 // 1.2 - Création d'une fonction d'affichage des produits <article> grâce à clé/produits du LS
 
@@ -60,10 +61,9 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
 
           for (let instance of produitsDuCatalogue)//Boucle 1 d'inventaire des produits du catalogue général.
           { 
-            for (let i of tableauPanier)//Boucle 2 d'inventaire des produits dans le LS
+            for (let i of ProduitsDansLS)//Boucle 2 d'inventaire des produits dans le LS
             {
               const produitParse = JSON.parse (i[1]);// parsage des éléments du LS pour exploitation des données.
-            console.log(i);
               /*git Comparaison entre les produits du LS et ceux du Catalogue général pour trouver les similitudes.
               Si similitude il y a alors, injecte le html suivant avec les données relatives au cat. général et celui du panier*/
               if (instance._id === produitParse.id)
