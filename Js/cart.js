@@ -16,7 +16,6 @@
 
 
 
-*/
 
 /* 1 ------------------------- Affichage des produits du panier ----------------------------- */
 
@@ -24,8 +23,11 @@
     /* récupération du local Storage et injection dans une variable
     (https://prograide.com/pregunta/21964/obtenir-les-cles-html5-localstorage)*/
 
-let tableauPanier = Object.entries(localStorage) 
-console.log(tableauPanier);//tableauPanierv => tableau composé des elements du panier
+let ProduitsDansLS = JSON.parse(localStorage.getItem("panier"))
+console.log(ProduitsDansLS);//ProduitsDansLS => tableau composé des elements du panier
+
+
+
 
 // 1.2 - Création d'une fonction d'affichage des produits <article> grâce à clé/produits du LS
 
@@ -53,29 +55,28 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
   (
     
     function recuperationJson(produitsDuCatalogue) //recuperationJson => Tableau composé de tous les produits (en Json...)
-    {
-      console.log(produitsDuCatalogue); //Affichage dans la console du contenu de JSON
       {
         let newArticle = document.querySelector("#cart__items");//ciblage de l'element html avec l'id cart__items
 
           for (let instance of produitsDuCatalogue)//Boucle 1 d'inventaire des produits du catalogue général.
           { 
-            for (let i of tableauPanier)//Boucle 2 d'inventaire des produits dans le LS
+            for (let i of ProduitsDansLS)//Boucle 2 d'inventaire des produits dans le LS
             {
-              const produitParse = JSON.parse (i[1]);// parsage des éléments du LS pour exploitation des données.
-            console.log(i);
-              /*git Comparaison entre les produits du LS et ceux du Catalogue général pour trouver les similitudes.
+              const produitPanier = JSON.parse (i[1]);// parsage des éléments du LS pour exploitation des données.
+             console.log(ProduitsDansLS[0]);
+              
+              /* Comparaison entre les produits du LS et ceux du Catalogue général pour trouver les similitudes.
               Si similitude il y a alors, injecte le html suivant avec les données relatives au cat. général et celui du panier*/
-              if (instance._id === produitParse.id)
+              if (instance._id === produitPanier.id)
                 { newArticle.innerHTML += `<section id="cart__items"> 
-                  <article class="cart__item" data-id="${produitParse.id}" data-color="${produitParse.couleur}">
+                  <article class="cart__item" data-id="${produitPanier.id}" data-color="${produitPanier.couleur}">
                       <div class="cart__item__img">
                         <img src="${instance.imageUrl}" alt="${instance.altTxt}">
                       </div>
                       <div class="cart__item__content">
                         <div class="cart__item__content__description">
                           <h2>${instance.name}</h2>
-                          <p>${produitParse.couleur}</p>
+                          <p>${produitPanier.couleur}</p>
                           <p>${instance.price} €</p>
                         </div>
                         <div class="cart__item__content__settings">
@@ -95,7 +96,7 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
        
           }
       }
-    }
+    
     
   )
 
@@ -106,13 +107,13 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
       affichageProd(catalogue)// Lance la fonction "affichageProd" permettant l'affichage des produits du fichier JSON
     }
   )*/
-.then (miseAJourPanier)
+/* .then (miseAJourPanier)
   
   //Sinon affiche le message d'erreur dans la console et son type
 .catch
   (function (err) 
     {
-    console.log("Une erreur est survenue" + err);
+    console.log('Une erreur est survenue' + err);
     }
   );
 
@@ -126,7 +127,7 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
   
 
     
-
+/*
     
 const modifQuantite = document.getElementsByClassName("cart__item__content__settings__quantity").length;
 console.log(modifQuantite);
@@ -135,13 +136,20 @@ console.log(modifQuantite);
 async function miseAJourPanier()
 {/*recherche dans le DOM le nombre d'éléments ayant pour classe "cart...." 
   (representant donc le nombre d'articles dans la panier et dont la "value" de l'imput peut être modifiée)*/
+
+/*
+
   const modifQuantite = document.getElementsByClassName("cart__item__content__settings__quantity").length;
   console.log(modifQuantite);
+  
 
   
-  /*change*/
+  //change
       
 };
+*/
+
+
 
 
 

@@ -8,7 +8,9 @@ console.log(idUrl) // vérification de la valeur retournée dans la console
 
 //------ Ecoute du chargement du DOM => Lance la fonction affichageProduit
 document.addEventListener("DOMContentLoaded",affichageProduit(),verificationPanierexistant())
+let produitChoisi={id: idUrl, 
 
+}
 
 //----------------------------FONCTION D'AFFICHAGE DU PRODUIT SUR LA PAGE --------------------------
 async function  affichageProduit()
@@ -23,6 +25,7 @@ async function  affichageProduit()
     imgProduit.appendChild(img);// crée un element enfant "img" à la cible div class ="imgProduit"
     img.setAttribute("src",product.imageUrl) /*va cherche dans la const product qui correspon au json l'attribut imageUrl et incremente le dans src*/
     img.setAttribute("alt",product.altTxt) 
+    produitChoisi.image = product.imageUrl;
     console.log(img)
     //-------------------Titre-<h1>----------------
     const titre = document.getElementById("title");
@@ -70,13 +73,18 @@ function verificationPanierexistant() {
 // Ajout 
 
 let couleurDiv = document.getElementById("colors").value;
-let quantiteAAjouter = parseInt(document.getElementById("quantity").value);
+let quantiteAAjouter = parseInt(document.getElementById("quantity").value)
+
 // Quand tu as ton objet qui ressemble à ceci
-let produitChoisi = {
+/*let produitChoisi = {
   id: idUrl, // idUrl est une constant déclarée au début lors de la récupértation de l'Id
   quantite: quantiteAAjouter, // Const quantity
   couleur: couleurDiv,
-};
+  image : adresseImage,
+}*/
+
+produitChoisi.quantite = quantiteAAjouter;
+produitChoisi.couleur = couleurDiv;
 
 // Si quantité <1 OU couleur != i alors renvoie un message "Merci de bien vouloir choisir une option de couleur Et un quantité"
 if (quantiteAAjouter < 1 || couleurDiv == "" ) 
