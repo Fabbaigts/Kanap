@@ -8,9 +8,7 @@ console.log(idUrl) // vérification de la valeur retournée dans la console
 
 //------ Ecoute du chargement du DOM => Lance la fonction affichageProduit
 document.addEventListener("DOMContentLoaded",affichageProduit(),verificationPanierexistant())
-let produitChoisi={id: idUrl, 
-
-}
+let produitChoisi={id: idUrl, }
 
 //----------------------------FONCTION D'AFFICHAGE DU PRODUIT SUR LA PAGE --------------------------
 async function  affichageProduit()
@@ -29,10 +27,12 @@ async function  affichageProduit()
     console.log(img)
     //-------------------Titre-<h1>----------------
     const titre = document.getElementById("title");
-    titre.textContent= product.name;
+    titre.textContent= product.name
+    produitChoisi.nom = product.name;
     //-------------------Price-<p>---------------
     const prix = document.getElementById("price");
     prix.textContent= product.price;
+    produitChoisi.prix = product.price;
     //-------------------Description-<p>--------------
     const description = document.getElementById("description");
     description.textContent= product.description;
