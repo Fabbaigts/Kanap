@@ -49,8 +49,6 @@ async function  affichageProduit()
       }
       /* -------------------------Fonction d'ajout de produit au panier ---------------------------------------------------*/
       const AjoutPanier = document.getElementById("addToCart");
-      
-
       AjoutPanier.addEventListener('click',function()
       {
           const colorValue = document.getElementById("colors").value;

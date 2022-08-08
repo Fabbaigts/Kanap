@@ -75,14 +75,6 @@ function verificationPanierexistant() {
 let couleurDiv = document.getElementById("colors").value;
 let quantiteAAjouter = parseInt(document.getElementById("quantity").value)
 
-// Quand tu as ton objet qui ressemble à ceci
-/*let produitChoisi = {
-  id: idUrl, // idUrl est une constant déclarée au début lors de la récupértation de l'Id
-  quantite: quantiteAAjouter, // Const quantity
-  couleur: couleurDiv,
-  image : adresseImage,
-}*/
-
 produitChoisi.quantite = quantiteAAjouter;
 produitChoisi.couleur = couleurDiv;
 
