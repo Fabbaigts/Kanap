@@ -29,10 +29,10 @@ async function  affichageProduit()
     const titre = document.getElementById("title");
     titre.textContent= product.name
     produitChoisi.nom = product.name;
-    //-------------------Price-<p>---------------
+    /*-------------------Price-<p>---------------
     const prix = document.getElementById("price");
     prix.textContent= product.price;
-    produitChoisi.prix = product.price;
+    produitChoisi.prix = product.price;*/
     //-------------------Description-<p>--------------
     const description = document.getElementById("description");
     description.textContent= product.description;

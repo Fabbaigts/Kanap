@@ -20,18 +20,21 @@
 
 let panierDuLs = JSON.parse(localStorage.getItem("panier"))
 console.log(panierDuLs);
-affichage (panierDuLs);
 
 
 
-//Création d'une Variable représentant les donnéees de l'api  à forte portee pour les infos IMG et PRIX .
+
+//1.2 Création d'un tableau vide prêt à reçevoir les données de l'api pour une comparaison d'id ultérieure LS/API.
+
 let infoPrixImageProduit =[];
 
-console.log(infoPrixImageProduit);
 
 
-/* 1.2 - Récup des infos du service web ( On récupère tous le catalogue produits , 
+
+/* 1.3 - Récup des infos du service web ( On récupère tous le catalogue produits , 
 pour ne récupéré que l'image et surtout les Prix car plus sécurisés et non manipulable dans l'api*/
+// A cette étape j'obtient donc 2 tableaux: celui de LS avec les produits mis dans le panier (panierDuLS) et celui de l'api 
+//avec tous les prix et images des produits (infoPrixImagesProduit).
 
 fetch("http://localhost:3000/api/products") 
 .then
@@ -45,8 +48,7 @@ fetch("http://localhost:3000/api/products")
 .then
   (function recup(catalogue) 
     {
-      console.log(catalogue); //Affichage dans la console du contenu de JSON
-    let tableauRecupPrix = [];
+      console.log(catalogue); //Affichage dans la console du contenu de JSON de l'api
       for  (let prod of catalogue)
       { infoPrixImageProduit.push ({id:prod._id, image:prod.imageUrl, prix: prod.price});
       }
@@ -104,16 +106,20 @@ fetch("http://localhost:3000/api/products")
 //************************************************************************************************* */
 
 // ***** Fonctionnalité globale d'affichage des produits du panier et ses TOTAUX
- 
+ console.log(infoPrixImageProduit);
+affichage (panierDuLs);
+
+
 function affichage (panierDuLs){
   let totalNombreArticle = 0;
   let montantTotalPanier = 0;
+
   for (let produit of panierDuLs)//Boucle  d'inventaire des produits dans le LS
     { console.log(produit);
 
       // ********* Fonctionnalité d'affichage des produits contenus dans le tableau ************
 
-      affichageProduits () //appel à la fonction d'affichage des produits du panier juste en dessous
+       affichageProduits () //appel à la fonction d'affichage des produits du panier juste en dessous
       function affichageProduits ()
       {
         let newArticle = document.querySelector("#cart__items");// création d'un nouvel article dans le DOM
@@ -127,7 +133,7 @@ function affichage (panierDuLs){
                           <div class="cart__item__content__description">
                             <h2>${produit.nom}</h2>
                             <p>${produit.couleur}</p>
-                            <p>${produit.prix} €</p>
+                            <p>${infoPrixImageProduit.prix} €</p>
                           </div>
                           <div class="cart__item__content__settings">
                             <div class="cart__item__content__settings__quantity">
@@ -143,13 +149,13 @@ function affichage (panierDuLs){
                       </article>
                     </section>`;
         }
-      }
-             
+      }     }}
+ /*            
 // ***************  Calcul et affichage  des TOTAUX panier ****************
 
   totalNombreArticle += JSON.parse(produit.quantite);//variable dans laquelle se trouve la qtité totale d'articles par incrémentation (+=)
   let totalArticles = totalNombreArticle;
-  montantTotalPanier += JSON.parse(produit.prix);//variable dans laquelle se trouve le montant total du panier
+  montantTotalPanier += JSON.parse(infoPrixImageProduit.prix);//variable dans laquell e se trouve le montant total du panier
   let prixTotal = montantTotalPanier;
   console.log ('Total des articles = ' + totalArticles);
   console.log ('Montant total calculé :  = ' + prixTotal);
@@ -169,6 +175,8 @@ function affichage (panierDuLs){
       }
     
 }
+
+*/
       
 // **********  mise à jour panier en fonction des variations de quantité ou de suppression 
     // écoute du bouton up / down quantité itemquantity getbyname .value =
