@@ -64,7 +64,7 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
             for (let i of ProduitsDansLS)//Boucle 2 d'inventaire des produits dans le LS
             {
               const produitParse = JSON.parse (i[1]);// parsage des éléments du LS pour exploitation des données.
-              /*git Comparaison entre les produits du LS et ceux du Catalogue général pour trouver les similitudes.
+              /* Comparaison entre les produits du LS et ceux du Catalogue général pour trouver les similitudes.
               Si similitude il y a alors, injecte le html suivant avec les données relatives au cat. général et celui du panier*/
               if (instance._id === produitParse.id)
                 { newArticle.innerHTML += `<section id="cart__items"> 

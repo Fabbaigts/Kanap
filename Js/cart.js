@@ -31,6 +31,7 @@ let infoPrixImageProduit =[];
 
 
 
+
 /* 1.3 - Récup des infos du service web ( On récupère tous le catalogue produits , 
 pour ne récupéré que l'image et surtout les Prix car plus sécurisés et non manipulable dans l'api*/
 // A cette étape j'obtient donc 2 tableaux: celui de LS avec les produits mis dans le panier (panierDuLS) et celui de l'api 
@@ -52,6 +53,9 @@ fetch("http://localhost:3000/api/products")
       for  (let prod of catalogue)
       { infoPrixImageProduit.push ({id:prod._id, image:prod.imageUrl, prix: prod.price});
       }
+       for (let element of infoPrixImageProduit)
+     { console.log(element); prixCatalogue = element.prix; console.log(prixCatalogue)
+    }
     }
   )
     //Sinon affiche le message d'erreur dans la console et son type
@@ -62,6 +66,8 @@ fetch("http://localhost:3000/api/products")
     }
   );
 
+
+ 
 
 // *********** Fonctionnalité de récupération du prix et de l'image des produits du LS depuis l'API *********
 
@@ -105,14 +111,19 @@ fetch("http://localhost:3000/api/products")
 
 //************************************************************************************************* */
 
-// ***** Fonctionnalité globale d'affichage des produits du panier et ses TOTAUX
+//affichage dans la console du tableau recupéré de l'api avec prix et images
  console.log(infoPrixImageProduit);
+
+
+//***** Fonctionnalité globale d'affichage des produits du panier et ses TOTAUX
+
 affichage (panierDuLs);
 
 
 function affichage (panierDuLs){
   let totalNombreArticle = 0;
   let montantTotalPanier = 0;
+   
 
   for (let produit of panierDuLs)//Boucle  d'inventaire des produits dans le LS
     { console.log(produit);
@@ -133,7 +144,7 @@ function affichage (panierDuLs){
                           <div class="cart__item__content__description">
                             <h2>${produit.nom}</h2>
                             <p>${produit.couleur}</p>
-                            <p>${infoPrixImageProduit.prix} €</p>
+                            <p>${produit.prix} €</p>
                           </div>
                           <div class="cart__item__content__settings">
                             <div class="cart__item__content__settings__quantity">
@@ -149,8 +160,13 @@ function affichage (panierDuLs){
                       </article>
                     </section>`;
         }
-      }     }}
- /*            
+      }   
+   
+
+
+    
+
+  
 // ***************  Calcul et affichage  des TOTAUX panier ****************
 
   totalNombreArticle += JSON.parse(produit.quantite);//variable dans laquelle se trouve la qtité totale d'articles par incrémentation (+=)
@@ -176,7 +192,6 @@ function affichage (panierDuLs){
     
 }
 
-*/
       
 // **********  mise à jour panier en fonction des variations de quantité ou de suppression 
     // écoute du bouton up / down quantité itemquantity getbyname .value =
