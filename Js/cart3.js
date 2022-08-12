@@ -109,12 +109,16 @@ function affichage (panierDuLs)
                      function recupInput() 
                     {
                          const champQuantite =  document.getElementsByClassName ('itemQuantity');
+                         
                         for ( let input of champQuantite ){
                        
                     
-                      addEventListener('change',(event) =>
+                      addEventListener('change',(e) =>
                         {
-                       produit.quantite = input.value ; panierDuLs.push(produit.quantite); console.log(produit.quantite);
+                       produit.quantite = input.value ;
+                    
+                     console.log(input.value);
+                      console.log(produit.quantite);
                             
                         }
                         )}

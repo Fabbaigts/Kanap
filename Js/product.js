@@ -70,7 +70,7 @@ function verificationPanierexistant() {
 }
 
    
-// Ajout 
+// définition et Ajout des produits (objets "produitsChoisi") dans le tableau "panier"
 
 let couleurDiv = document.getElementById("colors").value;
 let quantiteAAjouter = parseInt(document.getElementById("quantity").value)
