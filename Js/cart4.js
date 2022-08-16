@@ -288,3 +288,59 @@ function ecouteAdresse(){
             }
     })
 }
+//************************* Validation RegEx Ville ***************************** 
+ecouteVille()
+function ecouteVille(){
+    
+    let champVille = document.getElementById ('city');
+    console.log(champVille);
+    
+    champVille.addEventListener('change',(ville) =>{
+            console.log(ville.target.value);
+            if (ville.target.value.match(regexEmail)){
+                console.log(champVille);
+                console.log("match ok");
+                cityErrorMsg.innerHTML='';
+                client.ville = ville.target.value;
+                console.log(client);
+            }
+            else {
+                console.log(champVille);
+                console.log("erreur");
+                cityErrorMsg.innerHTML='Veuillez vérifier ce champ S.V.P';
+
+            }
+    })
+}
+
+//************************* Validation RegEx Ville ***************************** 
+ecouteEmail()
+function ecouteEmail(){
+    
+    let champEmail = document.getElementById ('email');
+    console.log(champEmail);
+    
+    champEmail.addEventListener('change',(email) =>{
+            console.log(email.target.value);
+            if (email.target.value.match(regexEmail)){
+                console.log(champEmail);
+                console.log("match ok");
+                emailErrorMsg.innerHTML='';
+                client.email = email.target.value;
+                console.log(client);
+            }
+            else {
+                console.log(champEmail);
+                console.log("erreur");
+                emailErrorMsg.innerHTML='Veuillez vérifier ce champ S.V.P';
+
+            }
+    })
+}
+
+
+// ***************** Création de la clé "Client" dans Le LS ********************
+
+
+
+
