@@ -1,6 +1,12 @@
 //************************************************************************************************ 
 //******** Déclaration des Variables globales nécessaires aux fonctionnalités de la page *********
 //************************************************************************************************ 
+let totalNombreArticle = 0; //initialisation du nombre total d'articles au chargement de la page
+let prixTotalPanier = 0;//initialisation du Montant total en € au chargement de la page
+let prixApi = {}; //Création d'un OBJET ayant pour valeur le prix d'un produit issu de l'API
+let qtiteLS = {};//Création d'un OBJET ayant pour valeur la  quantité de produit issue du LS.
+let idLS = {};
+let totalPrixligneProduit = {};
 let panierDuLs = JSON.parse(localStorage.getItem("panier"))//Récupération du panier du LS sous forme de Tableau.
 if (panierDuLs == null || panierDuLs == "") {
       // Tu créé un nouveau tableau vide dans le localstorage
@@ -11,11 +17,6 @@ if (panierDuLs == null || panierDuLs == "") {
 
 console.log(panierDuLs);
 //************************************************************************************************ 
-let totalNombreArticle = 0; //initialisation du nombre total d'articles au chargement de la page
-let prixTotalPanier = 0;//initialisation du Montant total en € au chargement de la page
-let prixApi = {}; //Création d'un OBJET ayant pour valeur le prix d'un produit issu de l'API
-let qtiteLS = {};//Création d'un OBJET ayant pour valeur la  quantité de produit issue du LS.
-let idLS = {};
 
 
 //************************************************************************************************ 
@@ -71,6 +72,10 @@ function affichageDesProduits(panierDuLs)
                                             </article>
                                         </section>`;
                 //***** Lancement des fonctions de calcul des totaux ET de modification des quantités*****
+                totalPrixligneProduit = qtiteLS * prixApi;
+                console.log ('total de la ligne :');
+                console.log (totalPrixligneProduit);
+               
                 calculDesTotaux();
                 modificationQuantite();
                 suppressionArticle ();
@@ -94,7 +99,7 @@ function calculDesTotaux(){
     /**//////////////////////////////////////////////
     /**///Calcul des totaux par "incrémentaion des valeurs de la boucle dans la fonction "affichageDesProduits()"
     /**/totalNombreArticle +=  qtiteLS ;
-    /**/prixTotalPanier += prixApi * qtiteLS;
+    /**/prixTotalPanier += totalPrixligneProduit 
     /**/newSpanQuantity.textContent = totalNombreArticle;
     /**/newSpanPrix.textContent = prixTotalPanier;
     /**//////////////////////////////////////////////
@@ -120,11 +125,15 @@ function modificationQuantite(){
 
                 // fonction find pour trouver dans le LS l'id qui correspond à la valeur retournee idquichange et color
                     
-                    let indexDuProuduitAChanger = panierDuLs.findIndex(x => (x.id == idQuiChange) && (x.couleur == couleurQuiChange));
-                    console.log(panierDuLs [indexDuProuduitAChanger].quantite);
-                    panierDuLs [indexDuProuduitAChanger].quantite = parseInt(elementquichange.target.value);
+                    let indexDuProduitAChanger = panierDuLs.findIndex(x => (x.id == idQuiChange) && (x.couleur == couleurQuiChange));
+                    console.log(panierDuLs [indexDuProduitAChanger].quantite);
+                    console.log (indexDuProduitAChanger.quantite);
+                    if (inputQuantite.value == 0 || inputQuantite.value == "null") {
+                    alert("La quantité d'articles doit être supérieure à 0 !");}
+                    else  {panierDuLs [indexDuProduitAChanger].quantite = parseInt(elementquichange.target.value);
                     localStorage.setItem ("panier",JSON.stringify(panierDuLs));
-                    console.log(elementquichange.target.value);
+                    console.log(elementquichange.target.value);};
+
                     window.location.reload(false);//rafraichis la page une fois la quantité changée
                     
                     
@@ -132,6 +141,8 @@ function modificationQuantite(){
         
     }
 };
+
+
 
 
 // ***************** Suppression d'articles du panier *****************
@@ -153,13 +164,13 @@ function suppressionArticle () {
 
                 // fonction find pour trouver dans le LS l'id qui correspond à la valeur retournee idquichange et color
                     
-                    let indexDuProuduitASupprimer = panierDuLs.findIndex(x => (x.id == idDuProduitSupprime && x.couleur == couleurDuProduitSupprime));
-                    console.log(panierDuLs [indexDuProuduitASupprimer]);
+                    let indexDuProduitASupprimer = panierDuLs.findIndex(x => (x.id == idDuProduitSupprime && x.couleur == couleurDuProduitSupprime));
+                    console.log(panierDuLs [indexDuProduitASupprimer]);
                     
                 // Suppression d'un objet d'un tableau avec la Technique filter() ( La technique avec slice supprimait tous les produits en dessous de celui selectionné!)
                 //https://www.delftstack.com/fr/howto/javascript/javascript-remove-from-array-by-value/#supprimer-un-%C3%A9l%C3%A9ment-d-un-tableau-par-valeur-%C3%A0-l-aide-de-la-fonction-filter-en-javascript
-                    var nouveauPanier = panierDuLs.filter(function(f){ return f !== panierDuLs [indexDuProuduitASupprimer]});
-                            console.log(indexDuProuduitASupprimer);
+                    var nouveauPanier = panierDuLs.filter(function(f){ return f !== panierDuLs [indexDuProduitASupprimer]});
+                            console.log(indexDuProduitASupprimer);
                             console.log(nouveauPanier);
                     localStorage.setItem ("panier",JSON.stringify(nouveauPanier));
              
@@ -178,4 +189,7 @@ function suppressionArticle () {
 //********** Fonctions concernant le formulaire de commande  ***********
 //**********************************************************************
 
+//**********Construction d'objets d'expression régulières (RegExp)************/
+
+const regexPrenomOk = /^[A-Za-z][A-Za-zéèôöàçêëù.,'-]*$/;
 
