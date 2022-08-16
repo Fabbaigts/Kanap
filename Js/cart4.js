@@ -191,5 +191,100 @@ function suppressionArticle () {
 
 //**********Construction d'objets d'expression régulières (RegExp)************/
 
-const regexPrenomOk = /^[A-Za-z][A-Za-zéèôöàçêëù.,'-]*$/;
+const regexPrenomOk = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
 
+/*regexAdresse accepte un minimum de trois caractères,
+ il n'y a pas de limite max de caractères. 
+ Les personnages peuvent inclure a-z, A-Z, 
+ des alphabets, des espaces, des virgules(,), point(.), apostrophe ( ' ) 
+ et le tiret(-) des symboles.*/
+
+const regexAdresse = /^[0-9A-Za-zéèôöàçêëù.,'-\s]*$/;
+
+const regexVille = /^[A-Za-z][A-Za-zéèôöàçêëù.,'-]*$/;
+
+const regexEmail =/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+/******** Création d'un objet client Vide qui va *********
+ ******** s'enrichir des données du formulaire   *********
+ ******** en fonction de la validité de chaque   *********
+ ********            champs écouté.              *********/
+
+let client ={};
+
+//************************* Validation RegEx PRENOM ***************************** 
+ecoutePrenom()
+function ecoutePrenom(){
+    
+    let champPrenom = document.getElementById ('firstName');
+    console.log(champPrenom);
+    
+    champPrenom.addEventListener('change',(prenom) =>{
+            console.log(prenom.target.value);
+            
+           if (prenom.target.value.match(regexPrenomOk)){
+                console.log(champPrenom);
+                console.log("match ok");
+                firstNameErrorMsg.innerHTML='';
+                
+                client.prenom = prenom.target.value;
+                console.log(client);
+            }
+            else if (champPrenom == "null") {firstNameErrorMsg.innerHTML='Merci de Saisir un minimum valide S.V. ';}
+            else { 
+                console.log(champPrenom);
+                
+                console.log("erreur");
+                firstNameErrorMsg.innerHTML='Veuillez vérifier ce champ S.V.P';
+
+            }
+    })
+}
+//************************* Validation RegEx NOM ***************************** 
+ecouteNom()
+function ecouteNom(){
+    
+    let champNom = document.getElementById ('lastName');
+    console.log(champNom);
+    
+    champNom.addEventListener('change',(nom) =>{
+            console.log(nom.target.value);
+            if (nom.target.value.match(regexPrenomOk)){
+                console.log(champNom);
+                console.log("match ok");
+                lastNameErrorMsg.innerHTML='';
+                client.nom = nom.target.value;
+                console.log(client);
+            }
+            else {
+                console.log(champNom);
+                console.log("erreur");
+                lastNameErrorMsg.innerHTML='Veuillez vérifier ce champ S.V.P';
+
+            }
+    })
+}
+//************************* Validation RegEx NOM ***************************** 
+ecouteAdresse()
+function ecouteAdresse(){
+    
+    let champAdresse = document.getElementById ('address');
+    console.log(champAdresse);
+    
+    champAdresse.addEventListener('change',(adresse) =>{
+            console.log(adresse.target.value);
+            if (adresse.target.value.match(regexAdresse)){
+                console.log(champAdresse);
+                console.log("match ok");
+                addressErrorMsg.innerHTML='';
+                client.adresse = adresse.target.value;
+                console.log(client);
+            }
+            else {
+                console.log(champAdresse);
+                console.log("erreur");
+                addressErrorMsg.innerHTML='Veuillez vérifier ce champ S.V.P';
+
+            }
+    })
+}
