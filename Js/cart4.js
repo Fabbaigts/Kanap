@@ -193,6 +193,7 @@ function suppressionArticle () {
 
 const regexPrenomOk = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
 
+const regexNomOk = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
 /*regexAdresse accepte un minimum de trois caractères,
  il n'y a pas de limite max de caractères. 
  Les personnages peuvent inclure a-z, A-Z, 
@@ -201,7 +202,7 @@ const regexPrenomOk = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
 
 const regexAdresse = /^[0-9A-Za-zéèôöàçêëù.,'-\s]*$/;
 
-const regexVille = /^[A-Za-z][A-Za-zéèôöàçêëù.,'-]*$/;
+const regexVille = /^[A-Za-z]{2,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
 
 const regexEmail =/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -211,6 +212,8 @@ const regexEmail =/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))
  ********            champs écouté.              *********/
 
 let client ={};
+
+let formulairOk = {};
 
 //************************* Validation RegEx PRENOM ***************************** 
 ecoutePrenom()
@@ -229,6 +232,10 @@ function ecoutePrenom(){
                 
                 client.prenom = prenom.target.value;
                 console.log(client);
+                formulairOk.prenom = regexPrenomOk.test(prenom.target.value);
+                console.log(formulairOk);
+                verificationFormulaireOk(formulairOk)
+                
             }
             else if (champPrenom == "null") {firstNameErrorMsg.innerHTML='Merci de Saisir un minimum valide S.V. ';}
             else { 
@@ -249,12 +256,15 @@ function ecouteNom(){
     
     champNom.addEventListener('change',(nom) =>{
             console.log(nom.target.value);
-            if (nom.target.value.match(regexPrenomOk)){
+            if (nom.target.value.match(regexNomOk)){
                 console.log(champNom);
                 console.log("match ok");
                 lastNameErrorMsg.innerHTML='';
                 client.nom = nom.target.value;
                 console.log(client);
+                formulairOk.nom = regexNomOk.test(nom.target.value);
+                console.log(formulairOk);
+                verificationFormulaireOk(formulairOk)
             }
             else {
                 console.log(champNom);
@@ -279,6 +289,9 @@ function ecouteAdresse(){
                 addressErrorMsg.innerHTML='';
                 client.adresse = adresse.target.value;
                 console.log(client);
+                formulairOk.adresse = regexAdresse.test(adresse.target.value);
+                console.log(formulairOk);
+                verificationFormulaireOk(formulairOk)
             }
             else {
                 console.log(champAdresse);
@@ -297,12 +310,15 @@ function ecouteVille(){
     
     champVille.addEventListener('change',(ville) =>{
             console.log(ville.target.value);
-            if (ville.target.value.match(regexEmail)){
+            if (ville.target.value.match(regexVille)){
                 console.log(champVille);
                 console.log("match ok");
                 cityErrorMsg.innerHTML='';
                 client.ville = ville.target.value;
                 console.log(client);
+                formulairOk.ville = regexVille.test(ville.target.value);
+                console.log(formulairOk);
+               verificationFormulaireOk(formulairOk)
             }
             else {
                 console.log(champVille);
@@ -323,15 +339,21 @@ function ecouteEmail(){
     champEmail.addEventListener('change',(email) =>{
             console.log(email.target.value);
             if (email.target.value.match(regexEmail)){
-                console.log(champEmail);
+                console.log(email.target.value);
                 console.log("match ok");
                 emailErrorMsg.innerHTML='';
                 client.email = email.target.value;
                 console.log(client);
+                console.log (regexEmail.test(email.target.value));
+                formulairOk.email = regexEmail.test(email.target.value);
+                console.log(formulairOk);
+                verificationFormulaireOk(formulairOk)
+
             }
             else {
                 console.log(champEmail);
-                console.log("erreur");
+                console.log("Il y a une erreur");
+                console.log (regexEmail.test(email.target.value))
                 emailErrorMsg.innerHTML='Veuillez vérifier ce champ S.V.P';
 
             }
@@ -339,8 +361,36 @@ function ecouteEmail(){
 }
 
 
+
+
 // ***************** Création de la clé "Client" dans Le LS ********************
+ 
+function verificationFormulaireOk(formulairOk){
+if (formulairOk.prenom == true && formulairOk.nom == true && formulairOk.adresse == true && formulairOk.ville == true && formulairOk.email == true ) 
+  {
+    console.log(formulairOk);
+    
+    alert(" Votre formulaire est complet et conforme! ");
+  } 
+  // SINON je récupère le panier (getItem) parsé (parse)
+else {
+    alert(" Votre formulaire n'est pas complet");
+       /* let panier = JSON.parse(localStorage.getItem("panier"));
+        // je vérifie que je trouve la condition suivante : l'id dans le tableau est = à idUrl *ET* la couleur dans le tab. est = à celle à ajouter au panier.
+         const produitEtCouleurDejaDansPanier = panier.find ((prod) => {return prod.id === idUrl && prod.couleur === couleurDiv;});
+        // Si la Couleur ET L'id renvoie la valeur "indefine" c'est que la condition au dessus n'est pas vérifiée, alors ajoute un produit dans le LS.  
+          if (produitEtCouleurDejaDansPanier===undefined ) 
+          { panier.push(produitChoisi);console.log('Valeur de la variable produit.couleur déjà dans panier : ' + panier.couleur);} 
+        //Sinon la condition id+couleur sont bien vérifiées, du coup incrémente la quantité du produit concerné de la quantité entrée dans le input.
+          else {produitEtCouleurDejaDansPanier.quantite += quantiteAAjouter;}
+          localStorage.setItem("panier", JSON.stringify(panier));*/
+        
+      }
+}
 
-
-
+        
+        
+     
+    
+console.log(client);
 
