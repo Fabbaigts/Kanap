@@ -23,16 +23,16 @@ async function  affichageProduit()
     imgProduit.appendChild(img);// crée un element enfant "img" à la cible div class ="imgProduit"
     img.setAttribute("src",product.imageUrl) /*va cherche dans la const product qui correspon au json l'attribut imageUrl et incremente le dans src*/
     img.setAttribute("alt",product.altTxt) 
-    produitChoisi.image = product.imageUrl;
+    //produitChoisi.image = product.imageUrl;
     console.log(img)
     //-------------------Titre-<h1>----------------
     const titre = document.getElementById("title");
     titre.textContent= product.name
-    produitChoisi.nom = product.name;
+    //produitChoisi.nom = product.name;
     //-------------------Price-<p>---------------
     const prix = document.getElementById("price");
     prix.textContent= product.price;
-    produitChoisi.prix = product.price;
+    //produitChoisi.prix = product.price;
     //-------------------Description-<p>--------------
     const description = document.getElementById("description");
     description.textContent= product.description;

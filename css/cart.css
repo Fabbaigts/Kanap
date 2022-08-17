@@ -106,6 +106,7 @@ h2 {
 	border: 0;
 	height: 26px;
 	margin-top: 4px;
+	
 }
 .cart__order__form__question input:focus {
 	outline: none;
