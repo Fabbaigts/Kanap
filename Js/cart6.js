@@ -134,9 +134,10 @@ function modificationQuantite(){
                     let indexDuProduitAChanger = panierDuLs.findIndex(indexPanier => (indexPanier.id == idRecupDom) && (indexPanier.couleur == couleurRecupDom));
                             console.log(panierDuLs [indexDuProduitAChanger].quantite);
                             console.log (indexDuProduitAChanger.quantite);
-                    if (inputQuantite.value == 0 || inputQuantite.value == "null") {
-                    alert("La quantité d'articles doit être supérieure à 0 !");
-                    inputQuantite.value = 1}
+                    if (inputQuantite.value == 0 || inputQuantite.value == "null" || inputQuantite.value >= 101 ) {
+                    alert("La quantité d'articles doit être supérieure à 0 et inférieure à 100!");
+                    inputQuantite.value = 1;window.location.reload();
+                    }
                     else  {
                     panierDuLs [indexDuProduitAChanger].quantite = parseInt(elementquichange.target.value);
                     localStorage.setItem ("panier",JSON.stringify(panierDuLs));
@@ -191,7 +192,7 @@ function suppressionArticle () {
                             console.log(nouveauPanier);
                     localStorage.setItem ("panier",JSON.stringify(nouveauPanier));
                 
-                  //window.location.reload(false);//rafraichis la page une fois la quantité changée
+                  window.location.reload(false);//rafraichis la page une fois la quantité changée
                     constitutionCommande();
                     calculDesTotaux();
                 })
@@ -470,5 +471,5 @@ Les types de ces champs et leur présence doivent être validés avant l’envoi
         
      
     
-console.log(client);
+console.log(contact);
 

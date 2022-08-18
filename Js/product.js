@@ -58,49 +58,77 @@ async function  affichageProduit()
     // Pour être sure que tu as toujours un tableau panier dans ton local storage
     // A chaque chargement de page tu vérifie s'il y a un tableau
 function verificationPanierexistant() {
-  const actionBouton = document.getElementById("addToCart");
-  actionBouton.addEventListener('click',function()
+    const actionBouton = document.getElementById("addToCart");
+    actionBouton.addEventListener('click',function()
     {
       const panier = localStorage.getItem("panier"); //Essayer d'accéder au local storage
 
-      // Si le panier n'existe pas
-      if (panier == null) {
-      // Tu créé un nouveau tableau vide dans le localstorage
-      localStorage.setItem("panier", JSON.stringify([]));
-}
+          // Si le panier n'existe pas
+        if (panier == null) {
+          // Tu créé un nouveau tableau vide dans le localstorage
+          localStorage.setItem("panier", JSON.stringify([]));
+        
+        } 
+        else { conditionsInjectionLS(); 
+        }
+    })
+  }
 
    
-// définition et Ajout des produits (objets "produitsChoisi") dans le tableau "panier"
+        // définition et Ajout des produits (objets "produitsChoisi") dans le tableau "panier"
 
-let couleurDiv = document.getElementById("colors").value;
-let quantiteAAjouter = parseInt(document.getElementById("quantity").value)
+function conditionsInjectionLS() {
+      let couleurDiv = document.getElementById("colors").value;
+      let quantiteAAjouter = parseInt(document.getElementById("quantity").value)
+      produitChoisi.quantite = quantiteAAjouter;
+      produitChoisi.couleur = couleurDiv;
 
-produitChoisi.quantite = quantiteAAjouter;
-produitChoisi.couleur = couleurDiv;
+        // Si quantité <1 OU couleur != i alors renvoie un message "Merci de bien vouloir choisir une option de couleur Et un quantité"
+      if (quantiteAAjouter < 1 || couleurDiv == "" ) 
+        {
+          console.log(quantiteAAjouter);
+          console.log(couleurDiv);
+          alert("Merci de bien vouloir renseigner une option couleur Et une Quantité! ");
+        } 
+        else if (quantiteAAjouter >100 ) {console.log(produitChoisi.quantite);
+          alert("La quantité ne peut exceder 100 unités.");
+          produitChoisi.quantite = 100;}
 
-// Si quantité <1 OU couleur != i alors renvoie un message "Merci de bien vouloir choisir une option de couleur Et un quantité"
-if (quantiteAAjouter < 1 || couleurDiv == "" ) 
-  {
-    console.log(quantiteAAjouter);
-    console.log(couleurDiv);
-    alert("Merci de bien vouloir renseigner une option couleur Et une Quantité! ");
-  } 
-  // SINON je récupère le panier (getItem) parsé (parse)
-else {
-        let panier = JSON.parse(localStorage.getItem("panier"));
-        // je vérifie que je trouve la condition suivante : l'id dans le tableau est = à idUrl *ET* la couleur dans le tab. est = à celle à ajouter au panier.
-         const produitEtCouleurDejaDansPanier = panier.find ((prod) => {return prod.id === idUrl && prod.couleur === couleurDiv;});
-        // Si la Couleur ET L'id renvoie la valeur "indefine" c'est que la condition au dessus n'est pas vérifiée, alors ajoute un produit dans le LS.  
-          if (produitEtCouleurDejaDansPanier===undefined ) 
-          { panier.push(produitChoisi);console.log('Valeur de la variable produit.couleur déjà dans panier : ' + panier.couleur);} 
-        //Sinon la condition id+couleur sont bien vérifiées, du coup incrémente la quantité du produit concerné de la quantité entrée dans le input.
-          else {produitEtCouleurDejaDansPanier.quantite += quantiteAAjouter;}
-          localStorage.setItem("panier", JSON.stringify(panier));
+
+      
         
-      }
+      else {
+              let panier = JSON.parse(localStorage.getItem("panier")); // SINON je récupère le panier (getItem) parsé (parse)
+              // je vérifie que je trouve la condition suivante : l'id dans le tableau est = à idUrl *ET* la couleur dans le tab. est = à celle à ajouter au panier.
+              const produitEtCouleurDejaDansPanier = panier.find ((prod) => {return prod.id === idUrl && prod.couleur === couleurDiv;});
+              // Si la Couleur ET L'id renvoie la valeur "indefine" c'est que la condition au dessus n'est pas vérifiée, alors ajoute un produit dans le LS.  
+                if (produitEtCouleurDejaDansPanier===undefined ) {
+                   panier.push(produitChoisi);
+                   console.log('Valeur de la variable produit.couleur déjà dans panier : ' + panier.couleur);
+                   alert("Votre produit a bien été ajouté au panier. pour une quantité totale de ");
+                   localStorage.setItem("panier", JSON.stringify(panier));
+                                     
+                } 
+              
+                //Sinon la condition id+couleur sont bien vérifiées, du coup incrémente la quantité du produit concerné de la quantité entrée dans le input.
+                else if (produitEtCouleurDejaDansPanier.quantite + quantiteAAjouter > 100 ) {
+                  console.log(produitChoisi.quantite);
+                  alert("Vous avez déjà le Maximum de 100 Unités dans votre panier !.");
+                  produitEtCouleurDejaDansPanier.quantite = 100;
+                  
+                }
+              else {
+                produitEtCouleurDejaDansPanier.quantite += quantiteAAjouter;
+                alert("Votre produit a bien été ajouté au panier. pour une quantité totale de ");
+                localStorage.setItem("panier", JSON.stringify(panier));
+              
+              
+              }
+            }
 
         console.log('Valeur de la variable produitChoisi.couleur : ' + produitChoisi.couleur);
         
      
-    })}
+}
+
 
