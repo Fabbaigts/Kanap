@@ -11,21 +11,29 @@ let listeDeCommande = []; // Création d'un tableau vide prêt à reçevoir les 
 let panierDuLs = JSON.parse(localStorage.getItem("panier"))//Récupération du panier du LS sous forme de Tableau.
 if (panierDuLs == null || panierDuLs == "") {
 let newTitle = document.querySelector("h1");
-newTitle.innerHTML = `<h1>Mince, votre chariot est vide!</h1>`;
+
+newTitle.innerHTML = `<h1>Mince, votre chariot est vide! </h1>
+`
+
 
 let newArticle = document.querySelector("#cart__items");
 newArticle.innerHTML = `<section id="cart__items"> 
                                              <article class="cart__item" data-id="" data-color="">
                                                 <div class="cart__item__img">
+                                                  <a href="http://127.0.0.1:5500/html/index.html">
                                                     <img src="/images/chariotvide.jpg" alt="chariot Vide!">
-                                                </div>
+                                                    </a>
                                                 
                                             </article>
+                                            <h2 class = "cart__item"> Cliquez sur le chariot pour commencer vos courses!</h2>
                                         </section>`;
 
 
-      
+let zoneAffichageformulaire = document.querySelector ('.cart__order');(zoneAffichageformulaire).style.display = "none";
+let zoneAffichageTotaux = document.querySelector ('.cart__price');(zoneAffichageTotaux).style.display = "none";
+
     }
+    
 
 console.log(panierDuLs);
 
@@ -223,6 +231,7 @@ function calculDesTotaux(articles){
            
         
         }
+        ecouteDesInput()
             
 };
 
@@ -245,18 +254,18 @@ function constitutionCommande(lignesArticles) {
 
 //**********Construction d'objets d'expression régulières (RegExp)************/
 
-const regexPrenomOk = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
+const regexPrenom = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
 
-const regexNomOk = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
+const regexNom = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
 /*regexAdresse accepte un minimum de trois caractères,
  il n'y a pas de limite max de caractères. 
  Les personnages peuvent inclure a-z, A-Z, 
  des alphabets, des espaces, des virgules(,), point(.), apostrophe ( ' ) 
  et le tiret(-) des symboles.*/
 
-const regexAdresse = /^[0-9A-Za-zéèôöàçêëù.,'-\s]*$/;
+const regexAdresse =/^[A-Za-z0-9]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
 
-const regexVille = /^[A-Za-z]{2,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
+const regexVille = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
 
 const regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -267,11 +276,21 @@ const regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+")
  ********            champs écouté.              *********/
 
 let contact ={};
-/******** Création d'un objet "formulairOK" pour les besoin des tests Regex *********/
-let formulairOk = {};
+/******** Création d'un objet "formulair" pour les besoin des tests Regex *********/
+let formulaire = {};
+
+function ecouteDesInput() {
+ecoutePrenom();
+ecouteNom();
+ecouteAdresse();
+ecouteVille();
+ecouteEmail();
+
+};
+
 
 //************************* Validation RegEx PRENOM ***************************** 
-ecoutePrenom()
+
 function ecoutePrenom(){
     
     let champPrenom = document.getElementById ('firstName');
@@ -280,31 +299,31 @@ function ecoutePrenom(){
     champPrenom.addEventListener('change',(prenom) =>{
             console.log(prenom.target.value);
             
-           if (prenom.target.value.match(regexPrenomOk)){
+           if (prenom.target.value.match(regexPrenom)){
                 console.log(champPrenom);
                 (champPrenom).style.backgroundColor = "rgb(209, 255, 222)";
                 console.log("match ok");
                 firstNameErrorMsg.innerHTML='';
-                
                 contact.prenom = prenom.target.value;
                 console.log(contact);
-                formulairOk.prenom = regexPrenomOk.test(prenom.target.value);
-                console.log(formulairOk);
-                verificationFormulaireOk(formulairOk)
+                formulaire.prenom = regexPrenom.test(prenom.target.value);
+                console.log(formulaire);
+                
                 
             }
-            else if (champPrenom == "null") {firstNameErrorMsg.innerHTML='Merci de Saisir un minimum valide S.V. ';}
+            
             else { 
                 console.log(champPrenom);
-                
-                console.log("erreur");
+                formulaire.prenom = regexPrenom.test(prenom.target.value);
+                console.log("le champ Prénom n'est pas conforme");
                 firstNameErrorMsg.innerHTML="Ce champ n'est pas Valide. Merci de le vérifier.";
                 (champPrenom).style.backgroundColor = "pink"; 
+                
             }
     })
 }
 //************************* Validation RegEx NOM ***************************** 
-ecouteNom()
+
 function ecouteNom(){
     
     let champNom = document.getElementById ('lastName');
@@ -312,27 +331,30 @@ function ecouteNom(){
     
     champNom.addEventListener('change',(nom) =>{
             console.log(nom.target.value);
-            if (nom.target.value.match(regexNomOk)){
+            if (nom.target.value.match(regexNom)){
                 console.log(champNom);
                 (champNom).style.backgroundColor = "rgb(209, 255, 222)";
                 console.log("match ok");
                 lastNameErrorMsg.innerHTML='';
                 contact.nom = nom.target.value;
                 console.log(contact);
-                formulairOk.nom = regexNomOk.test(nom.target.value);
-                console.log(formulairOk);
-                verificationFormulaireOk(formulairOk);
+                formulaire.nom = regexNom.test(nom.target.value);
+                console.log(formulaire);
+              
             }
+              
             else {
                 console.log(champNom);
-                console.log("erreur");
+                formulaire.nom = regexNom.test(nom.target.value);
+                console.log("le champ NOM n'est pas conforme");
                 lastNameErrorMsg.innerHTML="Ce champ n'est pas Valide. Merci de le vérifier.";
-                (champNom).style.backgroundColor = "pink"; 
+                (champNom).style.backgroundColor = "pink";
+                
             }
     })
 }
 //************************* Validation RegEx NOM ***************************** 
-ecouteAdresse()
+
 function ecouteAdresse(){
     
     let champAdresse = document.getElementById ('address');
@@ -347,19 +369,23 @@ function ecouteAdresse(){
                 addressErrorMsg.innerHTML='';
                 contact.adresse = adresse.target.value;
                 console.log(contact);
-                formulairOk.adresse = regexAdresse.test(adresse.target.value);
-                console.log(formulairOk);
-                verificationFormulaireOk(formulairOk)
+                formulaire.adresse = regexAdresse.test(adresse.target.value);
+                console.log(formulaire);
+                
+              
             }
             else {
                 console.log(champAdresse);
-                console.log("erreur");
+                formulaire.adresse = regexAdresse.test(adresse.target.value);
+                console.log("le champ Adresse n'est pas conforme");
                 addressErrorMsg.innerHTML="Ce champ n'est pas Valide. Merci de le vérifier.";
-                (champAdresse).style.backgroundColor = "pink"; }
+                (champAdresse).style.backgroundColor = "pink";
+               
+             }
     })
 }
 //************************* Validation RegEx Ville ***************************** 
-ecouteVille()
+
 function ecouteVille(){
     
     let champVille = document.getElementById ('city');
@@ -374,21 +400,24 @@ function ecouteVille(){
                 cityErrorMsg.innerHTML='';
                 contact.ville = ville.target.value;
                 console.log(contact);
-                formulairOk.ville = regexVille.test(ville.target.value);
-                console.log(formulairOk);
-               verificationFormulaireOk(formulairOk)
+                formulaire.ville = regexVille.test(ville.target.value);
+                console.log(formulaire);
+               
+            
             }
             else {
                 console.log(champVille);
-                console.log("erreur");
+                console.log("le champ Ville n'est pas conforme");
+                formulaire.ville = regexVille.test(ville.target.value);
                 cityErrorMsg.innerHTML="Ce champ n'est pas Valide. Merci de le vérifier.";
                 (champVille).style.backgroundColor = "pink"; 
+              
             }
     })
 }
 
 //************************* Validation RegEx Ville ***************************** 
-ecouteEmail()
+
 function ecouteEmail(){
     
     let champEmail = document.getElementById ('email');
@@ -406,61 +435,65 @@ function ecouteEmail(){
                 contact.email = email.target.value;
                 console.log(contact);
                 console.log (regexEmail.test(email.target.value));
-                formulairOk.email = regexEmail.test(email.target.value);
-                console.log(formulairOk);
-                verificationFormulaireOk(formulairOk)
+                formulaire.email = regexEmail.test(email.target.value);
+                console.log(formulaire);
+                console.log(formulaire.email);
+                
 
             }
             else {
                 console.log(champEmail);
-                console.log("Il y a une erreur");
-                console.log (regexEmail.test(email.target.value))
+                console.log("le champ Email n'est pas conforme");
+                console.log (regexEmail.test(email.target.value));
+                formulaire.email = regexEmail.test(email.target.value);
                 emailErrorMsg.innerHTML="Ce champ n'est pas Valide. Merci de le vérifier.";
              (champEmail).style.backgroundColor = "pink"; 
+             console.log(formulaire.email);
+             
 
             }
     })
 }
+// *****************************  Ecoute de la confomité globale du formulaire avant envoi ***************************
+    let boutonCommander = document.getElementById ('order');
+    boutonCommander.addEventListener('click',(commander) =>{
+      if (formulaire.prenom != true || formulaire.nom != true || formulaire.adresse != true || formulaire.ville != true || formulaire.email != true )
+         {alert("Le formulaire n'est pas encore conforme ou complet, merci de réessayer !");
+        alert("Le formulaire va se réinitialiser!");
+         
+        }
+         else {
+       
+         console.log("Merci!");
+          envoiDeLaCommande();}
+           alert("Merci!");
+        
+    });
 
 
 
-
-// ***************** Création de la clé "Client" dans Le LS ********************
-/*let boutonCommander = document.getElementById ('order');
-boutonCommander.addEventListener('click',(nouvelleCommande) =>{verificationFormulaireOk(formulairOk);creationTableauCommande();
-
-*/
-
-
-
-
-function verificationFormulaireOk(formulairOk){
-if (formulairOk.prenom == true && formulairOk.nom == true && formulairOk.adresse == true && formulairOk.ville == true && formulairOk.email == true ) 
-  {
-    console.log(formulairOk);
+// *****************************  Fonctions d'envoi de la commande ***************************
+function envoiDeLaCommande(){
     
-    alert("Le formulaire est complet, Vous pouvez envoyer la commande! ");
+        
+    //rappel de l'objet  {contact} attendu par l'APi construit au fure et à mesure  du remplissage des champs du formulaire
     const objetContactClient = (contact) ;
-    localStorage.setItem("contact", JSON.stringify(objetContactClient));
-
-  } 
-  // SINON je récupère le panier (getItem) parsé (parse)
-else { /*
+    console.log (contact);
+    // Création du tableau d'ID des produits à partir du tableau "listeDeCommande" créé au début de la page et modifié en fonction des suppressions.
+    let products = [];
+    for (let element of listeDeCommande){
+        products.push(element.Id);
+    }
+    console.log (products);
     
-        let panier = JSON.parse(localStorage.getItem("panier"));
-        // je vérifie que je trouve la condition suivante : l'id dans le tableau est = à idUrl *ET* la couleur dans le tab. est = à celle à ajouter au panier.
-         const produitEtCouleurDejaDansPanier = panier.find ((prod) => {return prod.id === idUrl && prod.couleur === couleurDiv;});
-        // Si la Couleur ET L'id renvoie la valeur "indefine" c'est que la condition au dessus n'est pas vérifiée, alors ajoute un produit dans le LS.  
-          if (produitEtCouleurDejaDansPanier===undefined ) 
-          { panier.push(produitChoisi);console.log('Valeur de la variable produit.couleur déjà dans panier : ' + panier.couleur);} 
-        //Sinon la condition id+couleur sont bien vérifiées, du coup incrémente la quantité du produit concerné de la quantité entrée dans le input.
-          else {produitEtCouleurDejaDansPanier.quantite += quantiteAAjouter;}
-          localStorage.setItem("panier", JSON.stringify(panier));
-        */
-      }
-}
-
-
+    
+    
+    
+    
+    /******* a retirer *********/localStorage.setItem("contact", JSON.stringify(objetContactClient));
+    
+  
+};
 
 
 /*Validation des données Pour les routes POST, l’objet CONTACT envoyé au serveur doit contenir les champs 
