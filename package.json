@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@types/react-router": "^5.1.18",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/uuid": "^8.3.4"
+  }
+}
