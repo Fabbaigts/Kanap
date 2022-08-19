@@ -294,7 +294,7 @@ function ecoutePrenom() {
       champPrenom.style.backgroundColor = "rgb(209, 255, 222)";
       console.log("match ok");
       firstNameErrorMsg.innerHTML = "";
-      contact.prenom = prenom.target.value;
+      contact.firstName = prenom.target.value;
       console.log(contact);
       formulaire.prenom = regexPrenom.test(prenom.target.value);
       console.log(formulaire);
@@ -321,7 +321,7 @@ function ecouteNom() {
       champNom.style.backgroundColor = "rgb(209, 255, 222)";
       console.log("match ok");
       lastNameErrorMsg.innerHTML = "";
-      contact.nom = nom.target.value;
+      contact.lastName = nom.target.value;
       console.log(contact);
       formulaire.nom = regexNom.test(nom.target.value);
       console.log(formulaire);
@@ -348,7 +348,7 @@ function ecouteAdresse() {
       champAdresse.style.backgroundColor = "rgb(209, 255, 222)";
       console.log("match ok");
       addressErrorMsg.innerHTML = "";
-      contact.adresse = adresse.target.value;
+      contact.adress = adresse.target.value;
       console.log(contact);
       formulaire.adresse = regexAdresse.test(adresse.target.value);
       console.log(formulaire);
@@ -375,7 +375,7 @@ function ecouteVille() {
       champVille.style.backgroundColor = "rgb(209, 255, 222)";
       console.log("match ok");
       cityErrorMsg.innerHTML = "";
-      contact.ville = ville.target.value;
+      contact.city = ville.target.value;
       console.log(contact);
       formulaire.ville = regexVille.test(ville.target.value);
       console.log(formulaire);
@@ -456,11 +456,11 @@ function envoiDeLaCommande() {
   console.log(produitsDeLaCommande);
 
   //Création d'un objet contenant l'objet client et le tableau de produits
-  const commande = { products:produitsDeLaCommande, contact:objetContactClient };
+  const order = { products : produitsDeLaCommande, contact:objetContactClient };
 
   console.log(contact);
-  console.log(commande.contact);
-  console.log(commande.products);
+  console.log(order.contact);
+  console.log(order.products);
   alert("Merci!");
 
 
@@ -474,7 +474,7 @@ function envoiDeLaCommande() {
      Accept: "application/json",
      "Content-Type": "application/json",
    },
-   body: JSON.stringify(commande),
+   body: JSON.stringify(order),
  })
    .then(function (res) {
      if (res.ok) {
