@@ -108,9 +108,7 @@ function injectionLS() {
         "Valeur de la variable produit.couleur déjà dans panier : " +
           panier.couleur
       );
-      alert(
-        "Votre produit a bien été ajouté au panier. pour une quantité totale de "
-      );
+      alert("Votre produit a bien été ajouté au panier. ");
       localStorage.setItem("panier", JSON.stringify(panier));
     }
 
