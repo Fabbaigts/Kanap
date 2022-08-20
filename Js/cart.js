@@ -5,47 +5,41 @@
 let listeDeCommande = []; // Création d'un tableau vide prêt à reçevoir les Objets "produits" de la commande ultéieure.
 
 let panierDuLs = JSON.parse(localStorage.getItem("panier")); //Récupération du panier du LS sous forme de Tableau.
+
+// Si le panier est vide, Affiche un message :
 if (panierDuLs == null || panierDuLs == "") {
   let newTitle = document.querySelector("h1");
 
-  newTitle.innerHTML = `<h1>Mince, votre chariot est vide! </h1>
-`;
+  newTitle.innerHTML = `<h1>Mince, votre chariot est vide! </h1>`;
 
   let newArticle = document.querySelector("#cart__items");
   newArticle.innerHTML = `<section id="cart__items"> 
-                                             <article class="cart__item" data-id="" data-color="">
-                                                <div class="cart__item__img">
-                                                  <a href="http://127.0.0.1:5500/html/index.html">
-                                                    <img src="/images/chariotvide.jpg" alt="chariot Vide!">
-                                                    </a>
-                                                
-                                            </article>
-                                            <h2 class = "cart__item"> Cliquez sur le chariot pour commencer vos courses!</h2>
-                                        </section>`;
+                                              <article class="cart__item" data-id="" data-color="">
+                                                  <div class="cart__item__img">
+                                                    <a href="http://127.0.0.1:5500/html/index.html">
+                                                      <img src="/images/chariotvide.jpg" alt="chariot Vide!">
+                                                      </a>
+                                                  
+                                              </article>
+                                              <h2 class = "cart__item"> Cliquez sur le chariot pour commencer vos courses!</h2>
+                                          </section>`;
 
   let zoneAffichageformulaire = document.querySelector(".cart__order");
   zoneAffichageformulaire.style.display = "none";
   let zoneAffichageTotaux = document.querySelector(".cart__price");
   zoneAffichageTotaux.style.display = "none";
+} else {
+  affichageDesProduits(panierDuLs);
 }
-
-console.log(panierDuLs);
-
-//************************************************************************************************
 
 //************************************************************************************************
 //***** BLOC DE Fonctionnalité permettant l'affichage des produits et leurs caractéristiques *****
 //************************************************************************************************
-affichageDesProduits(panierDuLs);
+
 function affichageDesProduits(panierDuLs) {
   // lancement de la boucle qui parcours chaque objets du panier
   // la variable "produit" représente un produit dans le panier.
   for (let produit of panierDuLs) {
-    console.log(produit.id);
-
-    console.log(produit.quantite);
-
-    // interrogation de l'api (fetch) concerant le produit parcouru
     fetch("http://localhost:3000/api/products/" + produit.id)
       .then((res) => {
         if (res.ok) {
@@ -54,8 +48,6 @@ function affichageDesProduits(panierDuLs) {
         }
       })
       .then((produitApi) => {
-        console.log(produitApi);
-
         nomApi = produitApi.name;
         imageApi = produitApi.imageUrl;
         prixApi = produitApi.price;
@@ -64,7 +56,6 @@ function affichageDesProduits(panierDuLs) {
         idLS = produit.id;
 
         //******Injection du produit dans le HTML du DOM************
-
         let newArticle = document.querySelector("#cart__items");
         newArticle.innerHTML += `<section id="cart__items"> 
                                              <article class="cart__item" data-id="${idApi}" data-color="${produit.couleur}">
@@ -91,6 +82,10 @@ function affichageDesProduits(panierDuLs) {
                                             </article>
                                         </section>`;
 
+        /*** Je profite de la boucle d'itération des produit du panier pour
+        construire un tableau "listeDeCommandedes" contenant les objets du panier
+        avec le PRIX de l'API */
+
         let produitAjouteCommande = {};
         produitAjouteCommande.Nom = produitApi.name;
         produitAjouteCommande.Id = produit.id;
@@ -99,45 +94,37 @@ function affichageDesProduits(panierDuLs) {
         produitAjouteCommande.quantite = produit.quantite;
         listeDeCommande.push(produitAjouteCommande);
 
+        // Lancement des fonctions modificationQuantite(), suppressionArticle(), et calculDesTotaux().
         modificationQuantite();
         suppressionArticle();
         calculDesTotaux();
       })
-      //Sinon affiche le message d'erreur dans la console et son type
+
+      //Si pas de réponse de l'API, affiche le message d'erreur dans la console
       .catch((err) => {
         console.log("Une erreur est survenue" + err);
       });
   }
 }
-console.log(listeDeCommande);
+
 //*************************************************************************************
 //*** Fonction concerant la modification des quantités ou la suppression d'articles ***
 //*************************************************************************************
 function modificationQuantite() {
   let champsQuantite = document.getElementsByClassName("itemQuantity");
-  console.log(champsQuantite); //=>Affiche dans la console un tableau des champs "itemQuantity" trouvés dans le DOM
-
   for (let inputQuantite of champsQuantite) {
     inputQuantite.addEventListener("change", (elementquichange) => {
-      console.log(elementquichange.target);
       let idRecupDom = elementquichange.target
         .closest("article")
         .getAttribute("data-id");
       let couleurRecupDom = elementquichange.target
         .closest("article")
         .getAttribute("data-color");
-      console.log(idRecupDom);
-      console.log("nouvelles valeurs de quantité détectée :");
-      console.log(inputQuantite.value);
-
       // fonction find pour trouver dans le LS l'id qui correspond à la valeur retournee idRecupDom et color
-
       let indexDuProduitAChanger = panierDuLs.findIndex(
         (indexPanier) =>
           indexPanier.id == idRecupDom && indexPanier.couleur == couleurRecupDom
       );
-      console.log(panierDuLs[indexDuProduitAChanger].quantite);
-      console.log(indexDuProduitAChanger.quantite);
       if (
         inputQuantite.value == 0 ||
         inputQuantite.value == "null" ||
@@ -152,21 +139,12 @@ function modificationQuantite() {
         panierDuLs[indexDuProduitAChanger].quantite = parseInt(
           elementquichange.target.value
         );
-        localStorage.setItem("panier", JSON.stringify(panierDuLs));
-        console.log(elementquichange.target.value);
         listeDeCommande[indexDuProduitAChanger].quantite = parseInt(
           elementquichange.target.value
         );
         localStorage.setItem("panier", JSON.stringify(panierDuLs));
-        console.log(elementquichange.target.value);
       }
-      // et modifie la quantité dans le tableau  listeDeCommande
 
-      //réinitialisation de l'affichage du panier
-
-      //window.location.reload(false);//rafraichis la page une fois la quantité changée
-
-      constitutionCommande();
       calculDesTotaux();
     });
   }
@@ -208,7 +186,7 @@ function suppressionArticle() {
       localStorage.setItem("panier", JSON.stringify(nouveauPanier));
 
       window.location.reload(false); //rafraichis la page une fois la quantité changée
-      constitutionCommande();
+
       calculDesTotaux();
     });
   }
@@ -237,30 +215,18 @@ function calculDesTotaux(articles) {
   ecouteDesInput();
 }
 
-//****************************************************************************************** */
-function constitutionCommande(lignesArticles) {}
+//******************************************************************************************************
+//************************* Fonctions concernant le formulaire de commande  ****************************
+//******************************************************************************************************
 
-//******************************************************************************************* */
-
-//**********************************************************************
-//********** Fonctions concernant le formulaire de commande  ***********
-//**********************************************************************
-
-//**********Construction d'objets d'expression régulières (RegExp)************/
+//**************************************************************
+//****Définition des expressions régulières (RegExp)************
+//**************************************************************
 
 const regexPrenom = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
-
 const regexNom = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
-/*regexAdresse accepte un minimum de trois caractères,
- il n'y a pas de limite max de caractères. 
- Les personnages peuvent inclure a-z, A-Z, 
- des alphabets, des espaces, des virgules(,), point(.), apostrophe ( ' ) 
- et le tiret(-) des symboles.*/
-
 const regexAdresse = /^[A-Za-z0-9]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
-
 const regexVille = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
-
 const regexEmail =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -278,64 +244,47 @@ function ecouteDesInput() {
   ecouteVille();
   ecouteEmail();
 }
-
-//************************* Validation RegEx PRENOM *****************************
-
+//**************************************************************
+//******** Validation RegEx du champ input "PRENOM" ************
+//**************************************************************
 function ecoutePrenom() {
   let champPrenom = document.getElementById("firstName");
-  console.log(champPrenom);
-
   champPrenom.addEventListener("change", (prenom) => {
-    console.log(prenom.target.value);
-
     if (prenom.target.value.match(regexPrenom)) {
-      console.log(champPrenom);
-      champPrenom.style.backgroundColor = "rgb(209, 255, 222)";
       console.log("match ok");
       firstNameErrorMsg.innerHTML = "";
       contact.firstName = prenom.target.value;
-      console.log(contact);
       formulaire.prenom = regexPrenom.test(prenom.target.value);
-      console.log(formulaire);
     } else {
-      console.log(champPrenom);
       formulaire.prenom = regexPrenom.test(prenom.target.value);
       console.log("le champ Prénom n'est pas conforme");
       firstNameErrorMsg.innerHTML =
         "Ce champ n'est pas Valide. Merci de le vérifier.";
-      champPrenom.style.backgroundColor = "pink";
     }
   });
 }
-//************************* Validation RegEx NOM *****************************
-
+//************************************************************
+//********** Validation RegEx du champ input "NOM" ***********
+//************************************************************
 function ecouteNom() {
   let champNom = document.getElementById("lastName");
-  console.log(champNom);
-
   champNom.addEventListener("change", (nom) => {
-    console.log(nom.target.value);
     if (nom.target.value.match(regexNom)) {
-      console.log(champNom);
-      champNom.style.backgroundColor = "rgb(209, 255, 222)";
       console.log("match ok");
       lastNameErrorMsg.innerHTML = "";
       contact.lastName = nom.target.value;
-      console.log(contact);
       formulaire.nom = regexNom.test(nom.target.value);
-      console.log(formulaire);
     } else {
-      console.log(champNom);
       formulaire.nom = regexNom.test(nom.target.value);
       console.log("le champ NOM n'est pas conforme");
       lastNameErrorMsg.innerHTML =
         "Ce champ n'est pas Valide. Merci de le vérifier.";
-      champNom.style.backgroundColor = "pink";
     }
   });
 }
-//************************* Validation RegEx NOM *****************************
-
+//****************************************************************
+//********** Validation RegEx du champ input "Adresse" ***********
+//****************************************************************
 function ecouteAdresse() {
   let champAdresse = document.getElementById("address");
   console.log(champAdresse);
@@ -343,81 +292,58 @@ function ecouteAdresse() {
   champAdresse.addEventListener("change", (adresse) => {
     console.log(adresse.target.value);
     if (adresse.target.value.match(regexAdresse)) {
-      console.log(champAdresse);
-      champAdresse.style.backgroundColor = "rgb(209, 255, 222)";
       console.log("match ok");
       addressErrorMsg.innerHTML = "";
       contact.address = adresse.target.value;
-      console.log(contact);
       formulaire.adresse = regexAdresse.test(adresse.target.value);
-      console.log(formulaire);
     } else {
-      console.log(champAdresse);
       formulaire.adresse = regexAdresse.test(adresse.target.value);
       console.log("le champ Adresse n'est pas conforme");
       addressErrorMsg.innerHTML =
         "Ce champ n'est pas Valide. Merci de le vérifier.";
-      champAdresse.style.backgroundColor = "pink";
     }
   });
 }
-//************************* Validation RegEx Ville *****************************
+//************************************************************
+//********** Validation RegEx du champ input "Ville" *********
+//************************************************************
 
 function ecouteVille() {
   let champVille = document.getElementById("city");
   console.log(champVille);
 
   champVille.addEventListener("change", (ville) => {
-    console.log(ville.target.value);
     if (ville.target.value.match(regexVille)) {
-      console.log(champVille);
-      champVille.style.backgroundColor = "rgb(209, 255, 222)";
       console.log("match ok");
       cityErrorMsg.innerHTML = "";
       contact.city = ville.target.value;
-      console.log(contact);
       formulaire.ville = regexVille.test(ville.target.value);
-      console.log(formulaire);
     } else {
-      console.log(champVille);
       console.log("le champ Ville n'est pas conforme");
       formulaire.ville = regexVille.test(ville.target.value);
       cityErrorMsg.innerHTML =
         "Ce champ n'est pas Valide. Merci de le vérifier.";
-      champVille.style.backgroundColor = "pink";
     }
   });
 }
 
-//************************* Validation RegEx Ville *****************************
+//************************************************************
+//********** Validation RegEx du champ input "Email" *********
+//************************************************************
 
 function ecouteEmail() {
   let champEmail = document.getElementById("email");
-  console.log(champEmail);
-  champEmail.style.backgroundColor = "gey";
   champEmail.addEventListener("change", (email) => {
-    console.log(email.target.value);
-
     if (email.target.value.match(regexEmail)) {
-      console.log(email.target.value);
-      champEmail.style.backgroundColor = "rgb(209, 255, 222)";
       console.log("match ok");
       emailErrorMsg.innerHTML = "";
       contact.email = email.target.value;
-      console.log(contact);
-      console.log(regexEmail.test(email.target.value));
       formulaire.email = regexEmail.test(email.target.value);
-      console.log(formulaire);
-      console.log(formulaire.email);
     } else {
-      console.log(champEmail);
       console.log("le champ Email n'est pas conforme");
-      console.log(regexEmail.test(email.target.value));
       formulaire.email = regexEmail.test(email.target.value);
       emailErrorMsg.innerHTML =
         "Ce champ n'est pas Valide. Merci de le vérifier.";
-      champEmail.style.backgroundColor = "pink";
-      console.log(formulaire.email);
     }
   });
 }
@@ -437,9 +363,10 @@ boutonCommander.addEventListener("click", () => {
     alert(
       "Le formulaire n'est pas encore conforme ou complet, merci de réessayer !"
     );
-    alert("Le formulaire va se réinitialiser!");
   } else {
-    console.log("Merci!");
+    console.log(
+      "Le formulaire est complet! Cliquez sur 'COMMANDER' pour confirmer votre commande."
+    );
     envoiDeLaCommande();
   }
 });
@@ -447,10 +374,9 @@ boutonCommander.addEventListener("click", () => {
 // ****  Fonctions d'envoi de la commande ****
 //********************************************
 function envoiDeLaCommande() {
-  //rappel de l'objet  {contact} attendu par l'APi construit au fure et à mesure  du remplissage des champs du formulaire
+  //rappel de l'objet  {contact} attendu par l'APi
   const objetContactClient = contact;
-
-  // Création du tableau d'ID des produits à partir du tableau "listeDeCommande" créé au début de la page et modifié en fonction des suppressions.
+  // Création du tableau d'ID des produits à partir du tableau "listeDeCommande"
   let produitsDeLaCommande = [];
   for (let element of listeDeCommande) {
     produitsDeLaCommande.push(element.Id);
@@ -460,7 +386,6 @@ function envoiDeLaCommande() {
   console.log(order.contact);
   console.log(order.products);
   // Connexion à l'APi , envoi de la commande et du contact et récupération du Numéro unique de commande avec injection dans l'URL
-
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     headers: { Accept: "application/json", "Content-Type": "application/json" },
@@ -480,35 +405,3 @@ function envoiDeLaCommande() {
       alert("Une erreur est survenue!" + err);
     });
 }
-
-// ***********     Fonctionnalité de calcul des TOTAUX     **************
-
-// Ajout des fonctionnalités d'incrémentation/décrémentation  d'articles du panier et de suppression
-// Principe :
-//  1 - ciblage des éléments du DOM dont la "value" de l'input doit être modifiée
-//  2 - écoute du bouton d'incrémentation/décrémentation de qtité
-//  3 - Au "clic" sur les bouton du haut/bas : augmente/diminue la valeur qtitié du LS.
-
-/*
-    
-const modifQuantite = document.getElementsByClassName("cart__item__content__settings__quantity").length;
-console.log(modifQuantite);
-
-
-async function miseAJourPanier()
-{/*recherche dans le DOM le nombre d'éléments ayant pour classe "cart...." 
-  (representant donc le nombre d'articles dans la panier et dont la "value" de l'imput peut être modifiée)*/
-
-/*
-
-  const modifQuantite = document.getElementsByClassName("cart__item__content__settings__quantity").length;
-  console.log(modifQuantite);
-  
-
-  
-  //change
-      
-};
-*/
-
-// ******** FORMULAIRE *************
