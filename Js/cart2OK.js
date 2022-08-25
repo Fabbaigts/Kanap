@@ -177,7 +177,6 @@ function modificationQuantite() {
       }
       calculDesTotaux();
       suppressionArticle();
-      modificationQuantite();
     });
   }
 }
