@@ -4,16 +4,25 @@
 // Création d'un tableau vide pour les Objets "produits" de la commande ultérieure.
 let listeDeCommande = [];
 // Récupération du panier du LS :
-let panierDuLs = JSON.parse(localStorage.getItem("panier"));
 
-// Si le panier est vide, Affiche un message :
-if (panierDuLs == null || panierDuLs == "") {
-  let newTitle = document.querySelector("h1");
+affichageDesProduits();
 
-  newTitle.innerHTML = `<h1>Mince, votre chariot est vide! </h1>`;
+//************************************************************************************************
+//***** BLOC DE Fonctionnalité permettant l'affichage des produits et leurs caractéristiques *****
+//************************************************************************************************
 
-  let newArticle = document.querySelector("#cart__items");
-  newArticle.innerHTML = `<section id="cart__items"> 
+async function affichageDesProduits() {
+  let panierDuLs = await JSON.parse(localStorage.getItem("panier"));
+  // lancement de la boucle qui parcours chaque objets du panier
+  // la variable "produit" représente un produit dans le panier.
+
+  if (panierDuLs == null || panierDuLs == "") {
+    let newTitle = document.querySelector("h1");
+
+    newTitle.innerHTML = `<h1>Mince, votre chariot est vide! </h1>`;
+
+    let newArticle = document.querySelector("#cart__items");
+    newArticle.innerHTML = `<section id="cart__items"> 
                                               <article class="cart__item" data-id="" data-color="">
                                                   <div class="cart__item__img">
                                                     <a href="http://127.0.0.1:5500/html/index.html">
@@ -24,55 +33,51 @@ if (panierDuLs == null || panierDuLs == "") {
                                               <h2 class = "cart__item"> Cliquez sur le chariot pour commencer vos courses!</h2>
                                           </section>`;
 
-  let zoneAffichageformulaire = document.querySelector(".cart__order");
-  zoneAffichageformulaire.style.display = "none";
-  let zoneAffichageTotaux = document.querySelector(".cart__price");
-  zoneAffichageTotaux.style.display = "none";
-} else {
-  affichageDesProduits(panierDuLs);
-}
+    let zoneAffichageformulaire = document.querySelector(".cart__order");
+    zoneAffichageformulaire.style.display = "none";
+    let zoneAffichageTotaux = document.querySelector(".cart__price");
+    zoneAffichageTotaux.style.display = "none";
+  } else {
+    for (let produit of panierDuLs) {
+      fetch("http://localhost:3000/api/products/" + produit.id)
+        .then((res) => {
+          if (res.ok) {
+            console.log(res);
+            return res.json();
+          }
+        })
+        .then((produitApi) => {
+          listeDeCommande = [];
 
-//************************************************************************************************
-//***** BLOC DE Fonctionnalité permettant l'affichage des produits et leurs caractéristiques *****
-//************************************************************************************************
+          let produitAjouteCommande = {};
+          produitAjouteCommande.id = produit.id;
+          produitAjouteCommande.img = produitApi.imageUrl;
+          produitAjouteCommande.Nom = produitApi.name;
+          produitAjouteCommande.description = produitApi.altTxt;
+          produitAjouteCommande.couleur = produit.couleur;
+          produitAjouteCommande.prix = produitApi.price;
+          produitAjouteCommande.quantite = produit.quantite;
 
-function affichageDesProduits(panierDuLs) {
-  // lancement de la boucle qui parcours chaque objets du panier
-  // la variable "produit" représente un produit dans le panier.
-  for (let produit of panierDuLs) {
-    fetch("http://localhost:3000/api/products/" + produit.id)
-      .then((res) => {
-        if (res.ok) {
-          console.log(res);
-          return res.json();
-        }
-      })
-      .then((produitApi) => {
-        nomApi = produitApi.name;
-        imageApi = produitApi.imageUrl;
-        prixApi = produitApi.price;
-        idApi = produitApi._id;
-        qtiteLS = produit.quantite;
-        idLS = produit.id;
+          listeDeCommande.push(produitAjouteCommande);
 
-        //******Injection du produit dans le HTML du DOM************
-        let newArticle = document.querySelector("#cart__items");
-        newArticle.innerHTML += `<section id="cart__items"> 
-                                             <article class="cart__item" data-id="${idApi}" data-color="${produit.couleur}">
+          //******Injection du produit dans le HTML du DOM************
+          let newArticle = document.querySelector("#cart__items");
+          newArticle.innerHTML += `<section id="cart__items"> 
+                                             <article class="cart__item" data-id="${produitAjouteCommande.id}" data-color="${produitAjouteCommande.couleur}">
                                                 <div class="cart__item__img">
-                                                    <img src="${imageApi}" alt="${produitApi.altTxt}">
+                                                    <img src="${produitAjouteCommande.img}" alt="${produitApi.altTxt}">
                                                 </div>
                                                 <div class="cart__item__content">
                                                     <div class="cart__item__content__description">
-                                                        <h2>${nomApi}</h2>
-                                                        <p>${produit.couleur}</p>
-                                                        <p>${prixApi}€</p>
+                                                        <h2>${produitAjouteCommande.Nom}</h2>
+                                                        <p>${produitAjouteCommande.couleur}</p>
+                                                        <p>${produitAjouteCommande.prix}€</p>
                                                     </div>
                                                     <div class="cart__item__content__settings">
                                                         <div class="cart__item__content__settings__quantity">
                                                             <p>Qté : </p>
                                                             <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" 
-                                                            value="${qtiteLS}">
+                                                            value="${produitAjouteCommande.quantite}">
                                                         </div>
                                                         <div class="cart__item__content__settings__delete">
                                                             <p class="deleteItem">Supprimer</p>
@@ -82,30 +87,56 @@ function affichageDesProduits(panierDuLs) {
                                             </article>
                                         </section>`;
 
-        /*** Je profite de la boucle d'itération des produit du panier pour
-        construire un tableau "listeDeCommandedes" contenant les objets du panier
-        avec le PRIX de l'API */
+          // Lancement des fonctions modificationQuantite(), suppressionArticle(), et calculDesTotaux().
+          modificationQuantite();
+          suppressionArticle();
+          calculDesTotaux();
+        })
 
-        let produitAjouteCommande = {};
-        produitAjouteCommande.Nom = produitApi.name;
-        produitAjouteCommande.Id = produit.id;
-        produitAjouteCommande.couleur = produit.couleur;
-        produitAjouteCommande.prix = prixApi;
-        produitAjouteCommande.quantite = produit.quantite;
-        listeDeCommande.push(produitAjouteCommande);
-
-        // Lancement des fonctions modificationQuantite(), suppressionArticle(), et calculDesTotaux().
-       modificationQuantite();
-       suppressionArticle();
-       calculDesTotaux();
-      })
-
-      //Si pas de réponse de l'API, affiche le message d'erreur dans la console
-      .catch((err) => {
-        console.log("Une erreur est survenue" + err);
-      });
-       
+        //Si pas de réponse de l'API, affiche le message d'erreur dans la console
+        .catch((err) => {
+          console.log("Une erreur est survenue" + err);
+        });
+    }
   }
+}
+function actualisationListeDeCommande() {
+  setTimeout(function actualisationDuPanier() {
+    console.log(listeDeCommande);
+
+    for (let produit of panierDuLs) {
+      fetch("http://localhost:3000/api/products/" + produit.id)
+        .then((res) => {
+          if (res.ok) {
+            console.log(res);
+            return res.json();
+          }
+        })
+        .then((produitApi) => {
+          listeDeCommande = [];
+
+          let produitAjouteCommande = {};
+          produitAjouteCommande.id = produit.id;
+          produitAjouteCommande.img = produitApi.imageUrl;
+          produitAjouteCommande.Nom = produitApi.name;
+          produitAjouteCommande.description = produitApi.altTxt;
+          produitAjouteCommande.couleur = produit.couleur;
+          produitAjouteCommande.prix = produitApi.price;
+          produitAjouteCommande.quantite = produit.quantite;
+
+          listeDeCommande.push(produitAjouteCommande);
+
+          modificationQuantite();
+          suppressionArticle();
+          calculDesTotaux();
+        })
+
+        //Si pas de réponse de l'API, affiche le message d'erreur dans la console
+        .catch((err) => {
+          console.log("Une erreur est survenue" + err);
+        });
+    }
+  }, 50);
 }
 
 //*************************************************************************************
@@ -113,7 +144,7 @@ function affichageDesProduits(panierDuLs) {
 //*************************************************************************************
 
 function modificationQuantite() {
-   
+  let panierDuLs = JSON.parse(localStorage.getItem("panier"));
   let champsQuantite = document.getElementsByClassName("itemQuantity");
   for (let inputQuantite of champsQuantite) {
     inputQuantite.addEventListener("change", (elementquichange) => {
@@ -142,14 +173,11 @@ function modificationQuantite() {
         panierDuLs[indexDuProduitAChanger].quantite = parseInt(
           elementquichange.target.value
         );
-        listeDeCommande[indexDuProduitAChanger].quantite = parseInt(
-          elementquichange.target.value
-        );
         localStorage.setItem("panier", JSON.stringify(panierDuLs));
-
       }
-
       calculDesTotaux();
+      suppressionArticle();
+      modificationQuantite();
     });
   }
 }
@@ -160,48 +188,58 @@ function modificationQuantite() {
 function suppressionArticle() {
   let boutonsSupprimer = document.getElementsByClassName("deleteItem");
   console.log(boutonsSupprimer); //=>Affiche dans la console un tableau des boutons supprimés trouvés dans le DOM
-
+  let panierDuLs = JSON.parse(localStorage.getItem("panier"));
   for (let boutons of boutonsSupprimer) {
     boutons.addEventListener("click", (supprime) => {
       console.log(supprime.target);
+
       let idDuProduitSupprime = supprime.target
         .closest("article")
         .getAttribute("data-id"); /*retourne l'id dom*/
       let couleurDuProduitSupprime = supprime.target
         .closest("article")
         .getAttribute("data-color");
-      console.log(idDuProduitSupprime);
-      console.log(couleurDuProduitSupprime);
 
       // fonction find pour trouver dans le LS l'id qui correspond à la valeur retournee idquichange et color
-
       let indexDuProduitASupprimer = panierDuLs.findIndex(
         (x) =>
           x.id == idDuProduitSupprime && x.couleur == couleurDuProduitSupprime
       );
       console.log(panierDuLs[indexDuProduitASupprimer]);
 
-      let indexListeDeCommande = listeDeCommande.findIndex(
-        (x) => x.Id == idDuProduitSupprime && x.couleur == couleurDuProduitSupprime);
-        console.log(listeDeCommande[indexListeDeCommande]);
-
-
-      // Suppression d'un objet d'un tableau avec la Technique filter() ( La technique avec slice supprimait tous les produits en dessous de celui selectionné!)
       //https://www.delftstack.com/fr/howto/javascript/javascript-remove-from-array-by-value/#supprimer-un-%C3%A9l%C3%A9ment-d-un-tableau-par-valeur-%C3%A0-l-aide-de-la-fonction-filter-en-javascript
+      //filtre qui garde tous les element n'ayant pas l'index concerné par la suppression
+
       var nouveauPanier = panierDuLs.filter(function (f) {
         return f !== panierDuLs[indexDuProduitASupprimer];
       });
       console.log(indexDuProduitASupprimer);
       console.log(nouveauPanier);
+
+      //****** Suppression De tous les articles De L'AFFICHAGE ******
+      let ProduitASupprimerDom =
+        document.querySelectorAll("article.cart__item");
+      console.log(ProduitASupprimerDom);
+      for (let i of ProduitASupprimerDom) {
+        i.remove();
+      }
+
+      //*************** effacement de l'ancien Panier Du LS  **********
+
+      panierDuLs = [];
+      console.log(panierDuLs);
+
+      //*************** Reconstruction du Nouveau panier du LS  **********
       localStorage.setItem("panier", JSON.stringify(nouveauPanier));
 
-      listeDeCommande.splice(indexListeDeCommande,1);
-      supprime.target.closest("article").remove();
-      
+      console.log(panierDuLs);
 
-      //window.location.reload(); //rafraichis la page une fois la quantité changée
+      // window.location.reload(); //rafraichis la page une fois la quantité changée
+      //*************** Lancement de fonction de Ré_affichage du nouveau panier et calcul des totaux  **********
 
       calculDesTotaux();
+      suppressionArticle();
+      affichageDesProduits();
     });
   }
 }
@@ -210,25 +248,37 @@ function suppressionArticle() {
 //********* Fonction de CALCUL des totaux ***********
 //***************************************************
 
-function calculDesTotaux() {
+async function calculDesTotaux() {
   let totalNombreArticle = 0;
   let prixTotalPanier = 0;
+  let CalculpanierDuLs = await JSON.parse(localStorage.getItem("panier"));
 
-  let newSpanQuantity = document.getElementById("totalQuantity");
-  let newSpanPrix = document.getElementById("totalPrice");
+  console.log(CalculpanierDuLs);
 
-  for (let produit of listeDeCommande) {
-    let prixTotalLigneProduit = produit.quantite * produit.prix;
-    console.log(prixTotalLigneProduit);
+  for (let n of CalculpanierDuLs) {
+    fetch("http://localhost:3000/api/products/" + n.id)
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((recupPrixApi) => {
+        prixProduit = recupPrixApi.price;
 
-    /**/ prixTotalPanier += prixTotalLigneProduit;
-                console.log(prixTotalPanier);
-    /**/ totalNombreArticle += produit.quantite;
-    
-    /**/ newSpanQuantity.textContent = totalNombreArticle;
-    /**/ newSpanPrix.textContent = prixTotalPanier;
+        /**/ let prixTotalLigneProduit = n.quantite * prixProduit;
+        console.log(prixTotalLigneProduit);
+        /**/ prixTotalPanier += prixTotalLigneProduit;
+        console.log(prixTotalPanier);
+        /**/ totalNombreArticle += n.quantite;
+
+        let newSpanQuantity = document.getElementById("totalQuantity");
+        let newSpanPrix = document.getElementById("totalPrice");
+        /**/ newSpanQuantity.textContent = totalNombreArticle;
+        /**/ newSpanPrix.textContent = prixTotalPanier;
+      });
+
+    ecouteDesInput();
   }
-  ecouteDesInput();
 }
 
 //******************************************************************************************************
