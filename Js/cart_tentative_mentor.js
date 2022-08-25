@@ -95,15 +95,16 @@ function affichageDesProduits(panierDuLs) {
         listeDeCommande.push(produitAjouteCommande);
 
         // Lancement des fonctions modificationQuantite(), suppressionArticle(), et calculDesTotaux().
-        modificationQuantite();
-        suppressionArticle();
-        calculDesTotaux();
+       modificationQuantite();
+       suppressionArticle();
+       calculDesTotaux();
       })
 
       //Si pas de réponse de l'API, affiche le message d'erreur dans la console
       .catch((err) => {
         console.log("Une erreur est survenue" + err);
       });
+       
   }
 }
 
@@ -112,6 +113,7 @@ function affichageDesProduits(panierDuLs) {
 //*************************************************************************************
 
 function modificationQuantite() {
+   
   let champsQuantite = document.getElementsByClassName("itemQuantity");
   for (let inputQuantite of champsQuantite) {
     inputQuantite.addEventListener("change", (elementquichange) => {
@@ -144,6 +146,7 @@ function modificationQuantite() {
           elementquichange.target.value
         );
         localStorage.setItem("panier", JSON.stringify(panierDuLs));
+
       }
 
       calculDesTotaux();
@@ -178,6 +181,11 @@ function suppressionArticle() {
       );
       console.log(panierDuLs[indexDuProduitASupprimer]);
 
+      let indexListeDeCommande = listeDeCommande.findIndex(
+        (x) => x.Id == idDuProduitSupprime && x.couleur == couleurDuProduitSupprime);
+        console.log(listeDeCommande[indexListeDeCommande]);
+
+
       // Suppression d'un objet d'un tableau avec la Technique filter() ( La technique avec slice supprimait tous les produits en dessous de celui selectionné!)
       //https://www.delftstack.com/fr/howto/javascript/javascript-remove-from-array-by-value/#supprimer-un-%C3%A9l%C3%A9ment-d-un-tableau-par-valeur-%C3%A0-l-aide-de-la-fonction-filter-en-javascript
       var nouveauPanier = panierDuLs.filter(function (f) {
@@ -187,7 +195,11 @@ function suppressionArticle() {
       console.log(nouveauPanier);
       localStorage.setItem("panier", JSON.stringify(nouveauPanier));
 
-      window.location.reload(); //rafraichis la page une fois la quantité changée
+      listeDeCommande.splice(indexListeDeCommande,1);
+      supprime.target.closest("article").remove();
+      
+
+      //window.location.reload(); //rafraichis la page une fois la quantité changée
 
       calculDesTotaux();
     });
@@ -204,13 +216,15 @@ function calculDesTotaux() {
 
   let newSpanQuantity = document.getElementById("totalQuantity");
   let newSpanPrix = document.getElementById("totalPrice");
+
   for (let produit of listeDeCommande) {
     let prixTotalLigneProduit = produit.quantite * produit.prix;
     console.log(prixTotalLigneProduit);
 
     /**/ prixTotalPanier += prixTotalLigneProduit;
-    console.log(prixTotalPanier);
+                console.log(prixTotalPanier);
     /**/ totalNombreArticle += produit.quantite;
+    
     /**/ newSpanQuantity.textContent = totalNombreArticle;
     /**/ newSpanPrix.textContent = prixTotalPanier;
   }

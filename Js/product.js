@@ -60,10 +60,10 @@ async function affichageProduit() {
   const description = document.getElementById("description");
   description.textContent = product.description;
 
-  //-------------------Option-<option value>---------------
+  //************************ AFFICHAGE DU CHOIX DES COULEURS *********************************
   // Boucle ayant comme iteration le nombre de valeurs contenues dans le tableau [color]
-  // et permettant la création d'élément enfants de le div "option" ayant comme valeur
-  // le contenu des instances du tableau et comme decritpion text le contenu de l'instance de ce tableau.
+  // et permettant la création d'élément enfants de le div "option"
+  //******************************************************************************************
   for (let i of product.colors) {
     let option = document.createElement("option");
     colors.appendChild(option);
@@ -73,61 +73,110 @@ async function affichageProduit() {
   }
 }
 //*******************************************************************************************
+//***** Fonction de vérification du champ input par REGEX (eviter le champ vide Nan) ********
+//*******************************************************************************************
+
+const regexInput = /([0-9\S]){1,}/;
+let verif = "ok";
+let ecouteChampQuantite = document.getElementById("quantity");
+ecouteChampQuantite.addEventListener("change", (input) => {
+  if (input.target.value.match(regexInput)) {
+    console.log("match ok");
+    verif = "ok";
+  } else {
+    console.log("le champ n'est pas conforme");
+    verif = "non ok";
+  }
+});
+
+//*******************************************************************************************
 //***** Fonction d'injection dans le tableau nommé "Panier" des objets "produitsChoisi" *****
 //*******************************************************************************************
 
 function injectionLS() {
+  let panier = JSON.parse(localStorage.getItem("panier"));
   let couleurDiv = document.getElementById("colors").value;
   let quantiteAAjouter = parseInt(document.getElementById("quantity").value);
   produitChoisi.quantite = quantiteAAjouter;
   produitChoisi.couleur = couleurDiv;
 
-  // Si quantité <1 OU couleur != i alors renvoie un message "Merci de bien vouloir choisir une option de couleur Et un quantité"
-  if (quantiteAAjouter < 1 || couleurDiv == "") {
-    console.log(quantiteAAjouter);
-    console.log(couleurDiv);
-    alert(
-      "Merci de bien vouloir renseigner une option couleur Et une Quantité! "
-    );
-  } else if (quantiteAAjouter > 100) {
+  //*****************************************************************************/
+  //*********************** CAS DE REJETS D'INJECTION ***************************/
+  //*****************************************************************************/
+
+  if (
+    // Si quantité <1 OU couleur != choix
+    produitChoisi.quantite < 1 ||
+    produitChoisi.couleur == null ||
+    produitChoisi.couleur == "" ||
+    verif == "non ok"
+  ) {
     console.log(produitChoisi.quantite);
-    alert("La quantité ne peut exceder 100 unités.");
-    produitChoisi.quantite = 100;
+    console.log(produitChoisi.couleur);
+    alert(
+      "Merci de bien vouloir vérifier votre saisie. Une option couleur et une quantité valide (de 1 et 100) doit être saisie "
+    );
   } else {
-    // SINON je vérifie que je trouve la condition suivante :
-    // l'id dans le tableau est = à idUrl **ET** la couleur dans le tab. est = à celle à ajouter au panier.
-    let panier = JSON.parse(localStorage.getItem("panier"));
+    /********************* CAS D'INJECTION ENVISAGES ******************************/
+    //  vérifie que je trouve la condition suivante :
+    // l'ID  * ET * la COULEUR sont déjà dans le panier.
+    // SI NON alors la  const produitEtCouleurDejaDansPanier = undefined
+    // SI OUI alors la const produitEtCouleurDejaDansPanier != undefined
+    /******************************************************************************/
+
     const produitEtCouleurDejaDansPanier = panier.find((prod) => {
       return prod.id === idUrl && prod.couleur === couleurDiv;
     });
-    // Si la Couleur ET L'id renvoie la valeur "indefine" c'est que la condition au dessus n'est pas vérifiée,
-    // alors ajoute un produit dans le LS.
+    console.log(produitEtCouleurDejaDansPanier);
+
+    /*  AJOUT D'UN NOUVEAU  PRODUIT AU LS SI  PAS DE PRODUIT SIMILAIRE (undefined) */
+
     if (produitEtCouleurDejaDansPanier === undefined) {
-      panier.push(produitChoisi);
+      // Si la Couleur ET L'id renvoie la valeur "indefine", le panier ne contient donc pas l'article selectionné.
+      panier.push(produitChoisi); // alors ajoute un produit dans le LS.
       console.log(
-        "Valeur de la variable produit.couleur déjà dans panier : " +
-          panier.couleur
+        "couleur ajoutee : " +
+          produitChoisi.couleur +
+          " / quantité ajoutée : " +
+          produitChoisi.quantite
       );
       alert("Votre produit a bien été ajouté au panier. ");
       localStorage.setItem("panier", JSON.stringify(panier));
     }
+    /*  SI QUANTITE > 100 mais PRODUIT NON PRESENT Ajoute la quantité MAXIMUM */
+    if (produitChoisi.quantite > 100) {
+      console.log(produitChoisi.quantite);
+      alert("La quantité ne peut exceder 100 unités.");
+      produitChoisi.quantite = 100;
+      localStorage.setItem("panier", JSON.stringify(panier));
+    }
+    /**********************************************************************************/
+    /***********   AJOUT DE QUANTITE SUR UN  PRODUIT DEJA EXISTANT DANS LE  LS ********/
+    /**********************************************************************************/
 
-    //Sinon la condition id+couleur sont bien vérifiées:
-    // incrémente la quantité du produit concerné de la quantité entrée dans le input.
-    else if (produitEtCouleurDejaDansPanier.quantite + quantiteAAjouter > 100) {
+    // si le TOTAL AJOUTE DEPASSE LES 100 Unités
+    if (
+      produitEtCouleurDejaDansPanier !=
+      undefined && produitEtCouleurDejaDansPanier.quantite + quantiteAAjouter > 100
+    ) {
       console.log(produitChoisi.quantite);
       alert("Vous avez déjà le Maximum de 100 Unités dans votre panier !.");
       produitEtCouleurDejaDansPanier.quantite = 100;
-    } else {
-      produitEtCouleurDejaDansPanier.quantite += quantiteAAjouter;
+      localStorage.setItem("panier", JSON.stringify(panier));
+    }
+    // si le TOTAL AJOUTE NE DEPASSE PAS LES 100 Unités Alors incrémente  de la quantité renseignée
+    if (produitEtCouleurDejaDansPanier !=
+      undefined ) {
+      produitEtCouleurDejaDansPanier.quantite += quantiteAAjouter; // incrémente la quantité du produit concerné
       alert(
-        "Votre produit a bien été ajouté au panier. pour une quantité totale de "
+        "Votre NOUVELLE QUANTITE produit a bien été ajouté au panier de +" +
+          produitChoisi.quantite
+      );
+      console.log(
+        "Votre NOUVELLE QUANTITE produit a bien été ajouté au panier de +" +
+          produitChoisi.quantite
       );
       localStorage.setItem("panier", JSON.stringify(panier));
     }
   }
-
-  console.log(
-    "Valeur de la variable produitChoisi.couleur : " + produitChoisi.couleur
-  );
 }
