@@ -1,22 +1,18 @@
-
-
 //************************************************************************************************
 //******** Déclaration des Variables globales nécessaires aux fonctionnalités de la page *********
 //************************************************************************************************
 
-let listeDeCommande = []; // Création d'un tableau vide prêt à reçevoir les Objets "produits" de la commande ultéieure.
+//Récupération du panier du LS
+let panierDuLs = JSON.parse(localStorage.getItem("panier"));
 
-let panierDuLs = JSON.parse(localStorage.getItem("panier")); //Récupération du panier du LS sous forme de Tableau.
+//*********************************************************************************************************
+//******************Boucle sur un fetch pour aller chercher les renseignement manquants********************
+//*************************** en fonction des produits existants dans le LS *******************************
+//*********************************************************************************************************
 
-
-//***************************************************************************
-//*************************************************************************** */ */
 constitutionPanierLocal();
 function constitutionPanierLocal() {
-  
-
   for (let i = 0; i < panierDuLs.length; i++) {
-    //(let i = 0; i < panierDuLs.length; i++)
     fetch("http://localhost:3000/api/products/" + panierDuLs[i].id)
       .then(function (res) {
         return res.json();
@@ -32,24 +28,28 @@ function constitutionPanierLocal() {
           alt: products.altTxt,
           quantite: panierDuLs[i].quantite,
         };
+
         listeDeCommande.push(produitAjouteCommande);
-        affichagePanier();
       })
 
       .catch((err) => {
         console.log("Une erreur est survenue" + err);
       });
   }
- 
 }
 
+// Création d'un tableau dns lequels seront stockés  les Objets "PRODUITS" de la commande ultérieure
+let listeDeCommande = [];
 
+//***********************************************************************************
+//********* boucle permettant l'affichage des produits sur la page CART *************
+//***********************************************************************************
+affichagePanier([listeDeCommande], panierDuLs);
+async function affichagePanier() {
+  console.log(listeDeCommande); // j'ai bien l'affichage du tableau dans la console
+  console.log(listeDeCommande.length); // et quand j'interroge sa taille, il m'indique 0 !
 
-async function affichagePanier() { console.log(listeDeCommande.length);
-  console.log(listeDeCommande);
-
-  for (let i = 0; i < listeDeCommande.length; i++) {
-    console.log("hello");
+  for (let i of listeDeCommande) {
+    console.log("hello"); //normlement je devrai avoir "hello" dans la console autant de fois qu'il y a de produits dans le tableau listeDeCommande...Mais NON!
   }
 }
-
