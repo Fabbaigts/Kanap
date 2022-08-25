@@ -1,10 +1,8 @@
 //************************************************************************************************
 //******** Déclaration des Variables globales nécessaires aux fonctionnalités de la page *********
 //************************************************************************************************
-// Création d'un tableau vide pour les Objets "produits" de la commande ultérieure.
-let listeDeCommande = [];
-// Récupération du panier du LS :
 
+//Lancement de la fonction d'affichage des produits contenus dans le LS
 affichageDesProduits();
 
 //************************************************************************************************
@@ -100,44 +98,6 @@ async function affichageDesProduits() {
     }
   }
 }
-function actualisationListeDeCommande() {
-  setTimeout(function actualisationDuPanier() {
-    console.log(listeDeCommande);
-
-    for (let produit of panierDuLs) {
-      fetch("http://localhost:3000/api/products/" + produit.id)
-        .then((res) => {
-          if (res.ok) {
-            console.log(res);
-            return res.json();
-          }
-        })
-        .then((produitApi) => {
-          listeDeCommande = [];
-
-          let produitAjouteCommande = {};
-          produitAjouteCommande.id = produit.id;
-          produitAjouteCommande.img = produitApi.imageUrl;
-          produitAjouteCommande.Nom = produitApi.name;
-          produitAjouteCommande.description = produitApi.altTxt;
-          produitAjouteCommande.couleur = produit.couleur;
-          produitAjouteCommande.prix = produitApi.price;
-          produitAjouteCommande.quantite = produit.quantite;
-
-          listeDeCommande.push(produitAjouteCommande);
-
-          modificationQuantite();
-          suppressionArticle();
-          calculDesTotaux();
-        })
-
-        //Si pas de réponse de l'API, affiche le message d'erreur dans la console
-        .catch((err) => {
-          console.log("Une erreur est survenue" + err);
-        });
-    }
-  }, 50);
-}
 
 //*************************************************************************************
 //************************** MODIFICATION DES QUANTITES *******************************
@@ -159,6 +119,7 @@ function modificationQuantite() {
         (indexPanier) =>
           indexPanier.id == idRecupDom && indexPanier.couleur == couleurRecupDom
       );
+      //**** Conditions de nouvelle valeur valides entrée dans l'input ****
       if (
         inputQuantite.value == 0 ||
         inputQuantite.value == "null" ||
@@ -170,9 +131,11 @@ function modificationQuantite() {
         inputQuantite.value = 1;
         window.location.reload();
       } else {
+        // Definis la nouvelle valeur de quantité concerant le produit avec l'index ciblé
         panierDuLs[indexDuProduitAChanger].quantite = parseInt(
           elementquichange.target.value
         );
+        //enregistre ces nouvelle valeurs dans le LocalStorage
         localStorage.setItem("panier", JSON.stringify(panierDuLs));
       }
       calculDesTotaux();
@@ -435,18 +398,20 @@ boutonCommander.addEventListener("click", () => {
 // ****  Fonctions d'envoi de la commande ****
 //********************************************
 function envoiDeLaCommande() {
-  //rappel de l'objet  {contact} attendu par l'APi
+  //rappel de l'objet  {contact} créé  lors du remplissage des champs et attendu par l'APi
   const objetContactClient = contact;
-  // Création du tableau d'ID des produits à partir du tableau "listeDeCommande"
+  // Création du tableau d'ID des produits à partir du "Panier du LS""
   let produitsDeLaCommande = [];
   let panierDuLs = JSON.parse(localStorage.getItem("panier"));
   for (let element of panierDuLs) {
     produitsDeLaCommande.push(element.id);
   }
-  //Création d'un objet contenant l'objet client et le tableau de produits
+  //Création d'un objet "ORDER" contenant (l'objet client + tableau de produits)
   const order = { products: produitsDeLaCommande, contact: objetContactClient };
   console.log(order.contact);
-  alert(order.products);
+  alert(
+    "Merci beaucoup pour votre commande, cliquez sur OK pour obtenir votre Numéro d'enregistrement'!"
+  );
   // Connexion à l'APi , envoi de la commande et du contact et récupération du Numéro unique de commande avec injection dans l'URL
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
