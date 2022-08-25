@@ -4,9 +4,6 @@
 
 //Lancement de la fonction d'affichage des produits contenus dans le LS
 affichageDesProduits();
-modificationQuantite();
-suppressionArticle();
-calculDesTotaux();
 
 //************************************************************************************************
 //***** BLOC DE Fonctionnalité permettant l'affichage des produits et leurs caractéristiques *****
@@ -23,16 +20,16 @@ async function affichageDesProduits() {
     newTitle.innerHTML = `<h1>Mince, votre chariot est vide! </h1>`;
 
     let newArticle = document.querySelector("#cart__items");
-    newArticle.innerHTML = `<section id="cart__items"> 
-                                              <article class="cart__item" data-id="" data-color="">
-                                                  <div class="cart__item__img">
-                                                    <a href="http://127.0.0.1:5500/html/index.html">
-                                                      <img src="/images/chariotvide.jpg" alt="chariot Vide!">
-                                                      </a>
-                                                  
-                                              </article>
-                                              <h2 class = "cart__item"> Cliquez sur le chariot pour commencer vos courses!</h2>
-                                          </section>`;
+    newArticle.innerHTML = `
+    <section id="cart__items"> 
+      <article class="cart__item" data-id="" data-color="">
+          <div class="cart__item__img">
+            <a href="http://127.0.0.1:5500/html/index.html">
+              <img src="/images/chariotvide.jpg" alt="chariot Vide!">
+            </a>                      
+      </article>
+      <h2 class = "cart__item"> Cliquez sur le chariot pour commencer vos courses!</h2>
+    </section>`;
 
     let zoneAffichageformulaire = document.querySelector(".cart__order");
     zoneAffichageformulaire.style.display = "none";
@@ -47,38 +44,34 @@ async function affichageDesProduits() {
             return res.json();
           }
         })
-        .then((produitApi) => {
-          listeDeCommande = [];
-
-          let produitAjouteCommande = {};
-          produitAjouteCommande.id = produit.id;
-          produitAjouteCommande.img = produitApi.imageUrl;
-          produitAjouteCommande.Nom = produitApi.name;
-          produitAjouteCommande.description = produitApi.altTxt;
-          produitAjouteCommande.couleur = produit.couleur;
-          produitAjouteCommande.prix = produitApi.price;
-          produitAjouteCommande.quantite = produit.quantite;
-
-          listeDeCommande.push(produitAjouteCommande);
+        .then((recupApi) => {
+          let recup = {};
+          recup.id = produit.id;
+          recup.img = recupApi.imageUrl;
+          recup.Nom = recupApi.name;
+          recup.Alt = recupApi.altTxt;
+          recup.couleur = produit.couleur;
+          recup.prix = recupApi.price;
+          recup.quantite = produit.quantite;
 
           //******Injection du produit dans le HTML du DOM************
           let newArticle = document.querySelector("#cart__items");
           newArticle.innerHTML += `<section id="cart__items"> 
-                                             <article class="cart__item" data-id="${produitAjouteCommande.id}" data-color="${produitAjouteCommande.couleur}">
+                                             <article class="cart__item" data-id="${recup.id}" data-color="${recup.couleur}">
                                                 <div class="cart__item__img">
-                                                    <img src="${produitAjouteCommande.img}" alt="${produitApi.altTxt}">
+                                                    <img src="${recup.img}" alt="${recup.Alt}">
                                                 </div>
                                                 <div class="cart__item__content">
                                                     <div class="cart__item__content__description">
-                                                        <h2>${produitAjouteCommande.Nom}</h2>
-                                                        <p>${produitAjouteCommande.couleur}</p>
-                                                        <p>${produitAjouteCommande.prix}€</p>
+                                                        <h2>${recup.Nom}</h2>
+                                                        <p>${recup.couleur}</p>
+                                                        <p>${recup.prix}€</p>
                                                     </div>
                                                     <div class="cart__item__content__settings">
                                                         <div class="cart__item__content__settings__quantity">
                                                             <p>Qté : </p>
                                                             <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" 
-                                                            value="${produitAjouteCommande.quantite}">
+                                                            value="${recup.quantite}">
                                                         </div>
                                                         <div class="cart__item__content__settings__delete">
                                                             <p class="deleteItem">Supprimer</p>
@@ -146,12 +139,12 @@ function modificationQuantite() {
   }
 }
 //*********************************************************************
-// ***************** SUPPRESSION d'articles du panier *****************
+// ***************** SUPPRESSION D'ARTICLES du panier *****************
 //*********************************************************************
 
 function suppressionArticle() {
+  //********* Ciblage de TOUS LES BOUTONS SUPPRIMER PRESENT SUR LA PAGE *********
   let boutonsSupprimer = document.getElementsByClassName("deleteItem");
-  console.log(boutonsSupprimer); //=>Affiche dans la console un tableau des boutons supprimés trouvés dans le DOM
 
   for (let boutons of boutonsSupprimer) {
     boutons.addEventListener("click", (supprime) => {
@@ -165,7 +158,7 @@ function suppressionArticle() {
         .closest("article")
         .getAttribute("data-color");
 
-      // fonction find pour trouver dans le LS l'id qui correspond à la valeur retournee idquichange et color
+      // fonction find pour trouver dans le LS l'id qui correspond à la valeur retournee (idDuProduitSupprime ET couleurDuProduitSupprime).
       let indexDuProduitASupprimer = panierDuLs.findIndex(
         (x) =>
           x.id == idDuProduitSupprime && x.couleur == couleurDuProduitSupprime
@@ -174,6 +167,7 @@ function suppressionArticle() {
 
       //https://www.delftstack.com/fr/howto/javascript/javascript-remove-from-array-by-value/#supprimer-un-%C3%A9l%C3%A9ment-d-un-tableau-par-valeur-%C3%A0-l-aide-de-la-fonction-filter-en-javascript
       //filtre qui garde tous les element n'ayant pas l'index concerné par la suppression
+      // et qui va permettre de construire le nouveau panier sans la référence supprimée.
 
       var nouveauPanier = panierDuLs.filter(function (f) {
         return f !== panierDuLs[indexDuProduitASupprimer];
@@ -181,7 +175,7 @@ function suppressionArticle() {
       console.log(indexDuProduitASupprimer);
       console.log(nouveauPanier);
 
-      //****** Suppression De tous les articles De L'AFFICHAGE ******
+      //****** CIBLAGE ET SUPPRESSION De TOUS les articles De l'ancien affichage obsolète ******
       let ProduitASupprimerDom = document.querySelectorAll(
         "#cart__items>#cart__items"
       );
@@ -190,19 +184,15 @@ function suppressionArticle() {
         i.remove();
       }
 
-      //*************** effacement de l'ancien Panier Du LS  **********
-
+      //*************** EFFACEMENT DE L'ANCIEN  Panier Du LS  **********
       panierDuLs = [];
       console.log(panierDuLs);
 
-      //*************** Reconstruction du Nouveau panier du LS  **********
+      //*************** CONSTRUCTION DU NOUVEAU PANIER du LS  **********
       localStorage.setItem("panier", JSON.stringify(nouveauPanier));
-
       console.log(panierDuLs);
 
-      // window.location.reload(); //rafraichis la page une fois la quantité changée
-      //*************** Lancement de fonction de Ré_affichage du nouveau panier et calcul des totaux  **********
-
+      //*************** CALCUL DES NOUVEAUX TOTAUX ET AFFICHAGE DU NOUVEAU PANIER  **********
       calculDesTotaux();
       affichageDesProduits();
     });
@@ -401,7 +391,7 @@ boutonCommander.addEventListener("click", () => {
 // ****  Fonctions d'envoi de la commande ****
 //********************************************
 function envoiDeLaCommande() {
-  //rappel de l'objet  {contact} créé  lors du remplissage des champs et attendu par l'APi
+  // Rappel de l'objet  {contact} créé  lors du remplissage des champs et attendu par l'APi
   const objetContactClient = contact;
   // Création du tableau d'ID des produits à partir du "Panier du LS""
   let produitsDeLaCommande = [];
@@ -409,13 +399,18 @@ function envoiDeLaCommande() {
   for (let element of panierDuLs) {
     produitsDeLaCommande.push(element.id);
   }
-  //Création d'un objet "ORDER" contenant (l'objet client + tableau de produits)
+  // Création d'un objet "ORDER" contenant (l'objet client + tableau de produits)
   const order = { products: produitsDeLaCommande, contact: objetContactClient };
   console.log(order.contact);
   alert(
     "Merci beaucoup pour votre commande, cliquez sur OK pour obtenir votre Numéro d'enregistrement'!"
   );
-  // Connexion à l'APi , envoi de la commande et du contact et récupération du Numéro unique de commande avec injection dans l'URL
+
+  //**************************************************************************
+  //******** Connexion à l'APi , envoi de la (commande ET du contact) ********
+  //** ET Récupération du Numéro unique de commande + injection dans l'URL ***
+  //**************************************************************************
+
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     headers: { Accept: "application/json", "Content-Type": "application/json" },
@@ -428,7 +423,7 @@ function envoiDeLaCommande() {
       }
     })
     .then(function (value) {
-      //recupération des valeurs de retour et injection dans l'URL de la valeur "orderId"
+      // Récupération des valeurs de retour et injection dans l'URL de la valeur "orderId"
       window.location = `..//html/confirmation.html?id=${value.orderId}`;
     })
     .catch(function (err) {
