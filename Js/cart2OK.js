@@ -4,6 +4,9 @@
 
 //Lancement de la fonction d'affichage des produits contenus dans le LS
 affichageDesProduits();
+modificationQuantite();
+suppressionArticle();
+calculDesTotaux();
 
 //************************************************************************************************
 //***** BLOC DE Fonctionnalité permettant l'affichage des produits et leurs caractéristiques *****
@@ -139,7 +142,6 @@ function modificationQuantite() {
         localStorage.setItem("panier", JSON.stringify(panierDuLs));
       }
       calculDesTotaux();
-      suppressionArticle();
     });
   }
 }
@@ -150,9 +152,10 @@ function modificationQuantite() {
 function suppressionArticle() {
   let boutonsSupprimer = document.getElementsByClassName("deleteItem");
   console.log(boutonsSupprimer); //=>Affiche dans la console un tableau des boutons supprimés trouvés dans le DOM
-  let panierDuLs = JSON.parse(localStorage.getItem("panier"));
+
   for (let boutons of boutonsSupprimer) {
     boutons.addEventListener("click", (supprime) => {
+      let panierDuLs = JSON.parse(localStorage.getItem("panier"));
       console.log(supprime.target);
 
       let idDuProduitSupprime = supprime.target
@@ -179,8 +182,9 @@ function suppressionArticle() {
       console.log(nouveauPanier);
 
       //****** Suppression De tous les articles De L'AFFICHAGE ******
-      let ProduitASupprimerDom =
-        document.querySelectorAll("article.cart__item");
+      let ProduitASupprimerDom = document.querySelectorAll(
+        "#cart__items>#cart__items"
+      );
       console.log(ProduitASupprimerDom);
       for (let i of ProduitASupprimerDom) {
         i.remove();
@@ -200,7 +204,6 @@ function suppressionArticle() {
       //*************** Lancement de fonction de Ré_affichage du nouveau panier et calcul des totaux  **********
 
       calculDesTotaux();
-      suppressionArticle();
       affichageDesProduits();
     });
   }
