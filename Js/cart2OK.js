@@ -439,13 +439,14 @@ function envoiDeLaCommande() {
   const objetContactClient = contact;
   // Création du tableau d'ID des produits à partir du tableau "listeDeCommande"
   let produitsDeLaCommande = [];
-  for (let element of listeDeCommande) {
-    produitsDeLaCommande.push(element.Id);
+  let panierDuLs = JSON.parse(localStorage.getItem("panier"));
+  for (let element of panierDuLs) {
+    produitsDeLaCommande.push(element.id);
   }
   //Création d'un objet contenant l'objet client et le tableau de produits
   const order = { products: produitsDeLaCommande, contact: objetContactClient };
   console.log(order.contact);
-  console.log(order.products);
+  alert(order.products);
   // Connexion à l'APi , envoi de la commande et du contact et récupération du Numéro unique de commande avec injection dans l'URL
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
