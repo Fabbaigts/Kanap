@@ -1,12 +1,8 @@
-//************************************************************************************************
-//******** Déclaration des Variables globales nécessaires aux fonctionnalités de la page *********
-//************************************************************************************************
-
 //Lancement de la fonction d'affichage des produits contenus dans le LS
 affichageDesProduits();
 
 //************************************************************************************************
-//***** BLOC DE Fonctionnalité permettant l'affichage des produits et leurs caractéristiques *****
+//******************* Fonctionnalité permettant l'AFFICHAGE DES PRODUITS *************************
 //************************************************************************************************
 
 async function affichageDesProduits() {
