@@ -10,10 +10,9 @@ affichageDesProduits();
 //************************************************************************************************
 
 async function affichageDesProduits() {
+  // Récupération des produits du PANIER DU LOCAL STORAGE
   let panierDuLs = await JSON.parse(localStorage.getItem("panier"));
-  // lancement de la boucle qui parcours chaque objets du panier
-  // la variable "produit" représente un produit dans le panier.
-
+  //******************** Si le PANIER EST VIDE :  ***********************
   if (panierDuLs == null || panierDuLs == "") {
     let newTitle = document.querySelector("h1");
 
@@ -35,43 +34,36 @@ async function affichageDesProduits() {
     zoneAffichageformulaire.style.display = "none";
     let zoneAffichageTotaux = document.querySelector(".cart__price");
     zoneAffichageTotaux.style.display = "none";
-  } else {
-    for (let produit of panierDuLs) {
-      fetch("http://localhost:3000/api/products/" + produit.id)
+  }
+  //****************** SI LE PANIER N'EST PAS VIDE :  ***************
+  else {
+    for (let produitLS of panierDuLs) {
+      fetch("http://localhost:3000/api/products/" + produitLS.id)
         .then((res) => {
           if (res.ok) {
             console.log(res);
             return res.json();
           }
         })
-        .then((recupApi) => {
-          let recup = {};
-          recup.id = produit.id;
-          recup.img = recupApi.imageUrl;
-          recup.Nom = recupApi.name;
-          recup.Alt = recupApi.altTxt;
-          recup.couleur = produit.couleur;
-          recup.prix = recupApi.price;
-          recup.quantite = produit.quantite;
-
-          //******Injection du produit dans le HTML du DOM************
+        //****** Injection du produit dans le HTML du DOM ************
+        .then((produitAPI) => {
           let newArticle = document.querySelector("#cart__items");
           newArticle.innerHTML += `<section id="cart__items"> 
-                                             <article class="cart__item" data-id="${recup.id}" data-color="${recup.couleur}">
+                                             <article class="cart__item" data-id="${produitLS.id}" data-color="${produitLS.couleur}">
                                                 <div class="cart__item__img">
-                                                    <img src="${recup.img}" alt="${recup.Alt}">
+                                                    <img src="${produitAPI.imageUrl}" alt="${produitAPI.altTxt}">
                                                 </div>
                                                 <div class="cart__item__content">
                                                     <div class="cart__item__content__description">
-                                                        <h2>${recup.Nom}</h2>
-                                                        <p>${recup.couleur}</p>
-                                                        <p>${recup.prix}€</p>
+                                                        <h2>${produitAPI.name}</h2>
+                                                        <p>${produitLS.couleur}</p>
+                                                        <p>${produitAPI.price}€</p>
                                                     </div>
                                                     <div class="cart__item__content__settings">
                                                         <div class="cart__item__content__settings__quantity">
                                                             <p>Qté : </p>
                                                             <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" 
-                                                            value="${recup.quantite}">
+                                                            value="${produitLS.quantite}">
                                                         </div>
                                                         <div class="cart__item__content__settings__delete">
                                                             <p class="deleteItem">Supprimer</p>
@@ -167,7 +159,7 @@ function suppressionArticle() {
 
       //https://www.delftstack.com/fr/howto/javascript/javascript-remove-from-array-by-value/#supprimer-un-%C3%A9l%C3%A9ment-d-un-tableau-par-valeur-%C3%A0-l-aide-de-la-fonction-filter-en-javascript
       //filtre qui garde tous les element n'ayant pas l'index concerné par la suppression
-      // et qui va permettre de construire le nouveau panier sans la référence supprimée.
+      // et qui va permettre LA CONSTRUCTION DU NOUVEAU PANIER DU LS  sans la référence supprimée.
 
       var nouveauPanier = panierDuLs.filter(function (f) {
         return f !== panierDuLs[indexDuProduitASupprimer];
@@ -237,11 +229,10 @@ async function calculDesTotaux() {
 }
 
 //******************************************************************************************************
-//************************* Fonctions concernant le formulaire de commande  ****************************
+//***************************  FORMULAIRE DE COMMANDE ET CONDITIONS REGEX  *****************************
 //******************************************************************************************************
 
 //****Définition des expressions régulières (RegExp)************
-
 const regexPrenom = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
 const regexNom = /^[A-Za-z]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
 const regexAdresse = /^[A-Za-z0-9]{3,}[A-Za-zéèôöàçêëù.,'-\s]*$/;
@@ -403,7 +394,7 @@ function envoiDeLaCommande() {
   const order = { products: produitsDeLaCommande, contact: objetContactClient };
   console.log(order.contact);
   alert(
-    "Merci beaucoup pour votre commande, cliquez sur OK pour obtenir votre Numéro d'enregistrement'!"
+    "Merci beaucoup pour votre commande, cliquez sur OK pour obtenir votre Numéro d'enregistrement!"
   );
 
   //**************************************************************************

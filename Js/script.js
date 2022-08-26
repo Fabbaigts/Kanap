@@ -44,11 +44,8 @@ function affichageProd(catalogue) {
     const par = document.createElement("p");
     par.textContent = `${i.description}`;
 
-    const par2 = document.createElement("p");
-    par2.textContent = `à partir de ${i.price}€`;
-
     lien.appendChild(article);
-    article.append(img, titre, par, par2);
+    article.append(img, titre, par);
 
     newArticle.appendChild(lien);
   }
