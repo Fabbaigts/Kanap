@@ -1,9 +1,11 @@
-//**********************************************************************
-//*** Interrogation de l'APi sur l'existance d'un fichier "products" ***
-//**********************************************************************
+//**************************************************************************
+//*** 1 - Interrogation de l'APi sur l'existance d'un fichier "products" ***
+//**************************************************************************
 
-fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupération des données du fichier produits
-  //Alors, Si le fichier cible est trouvé, (res.ok) retourne les informations en format JSON.
+// Appel vers l'API pour la récupération des données du fichier produits
+
+fetch("http://localhost:3000/api/products")
+  // Si le fichier cible est trouvé, (res.ok) retourne les informations en format JSON.
   .then(function (res) {
     if (res.ok) {
       console.log(res);
@@ -19,12 +21,13 @@ fetch("http://localhost:3000/api/products") // Appel vers l'API pour la récupé
     console.log("Une erreur est survenue" + err);
   });
 
-//***************************************************************
-//*** Fonction d'affichage du catalogue sur la page d'accueil ***
-//***************************************************************
+//*******************************************************************
+//*** 2 - Fonction d'affichage du catalogue sur la page d'accueil ***
+//*******************************************************************
 
 function affichageProd(catalogue) {
-  let newArticle = document.querySelector("#items"); // cible de la div dans laquelle afficher les produits récupérés
+  // cible de la div dans laquelle afficher les produits récupérés
+  let newArticle = document.querySelector("#items");
   /*boucle pour chaque instance du catalogue sans indice précis*/
   for (let i of catalogue) {
     console.log("Nouvel article détecté dans le fichier JSON:  " + i.name);
